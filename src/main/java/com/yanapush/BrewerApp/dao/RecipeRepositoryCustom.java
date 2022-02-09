@@ -8,5 +8,4 @@ public interface RecipeRepositoryCustom {
     List<Recipe> findAllByCoffeeName(String coffee);
 
     public List<Recipe> findAllByAuthorUsernameAndCoffeeName(String username, String coffee);
-
 }

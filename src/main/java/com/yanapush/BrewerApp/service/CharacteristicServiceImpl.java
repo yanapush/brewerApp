@@ -21,6 +21,6 @@ public class CharacteristicServiceImpl implements CharacteristicService {
 
     @Override
     public Characteristic getCharacteristicByRecipeId(int id) {
-        return repository.findByRecipeId(id).orElse(null);
+        return repository.findById(id).orElse(null);
     }
 }
