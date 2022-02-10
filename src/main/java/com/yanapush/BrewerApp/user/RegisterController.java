@@ -3,7 +3,6 @@ package com.yanapush.BrewerApp.user;
 import com.yanapush.BrewerApp.user.role.Role;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -39,10 +38,10 @@ public class RegisterController {
     public ResponseEntity<String> changePassword(
             @RequestBody String password) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String encodedPassword = passwordEncoder.encode(password);
+        password = passwordEncoder.encode(password);
         return (service.changeUserPassword(authentication.getName(), password))
                 ? new ResponseEntity<>(MessageConstants.SUCCESS_PASSWORD_CHANGE, HttpStatus.OK)
-        : new ResponseEntity<>(MessageConstants.ERROR_CHANGING_PASSWORD, HttpStatus.INTERNAL_SERVER_ERROR);
+                : new ResponseEntity<>(MessageConstants.ERROR_CHANGING_PASSWORD, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/user")

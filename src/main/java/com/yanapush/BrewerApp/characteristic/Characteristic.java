@@ -34,9 +34,4 @@ public class Characteristic {
     @Min(value = 1, message = MessageConstants.VALIDATION_MESSAGE_MIN)
     @Max(value = 5, message = MessageConstants.VALIDATION_MESSAGE_MAX)
     private int bitterness;
-
-    @OneToOne(mappedBy = "characteristic", cascade = {CascadeType.DETACH, CascadeType.MERGE,
-            CascadeType.PERSIST, CascadeType.REFRESH})
-    @NotNull(message = MessageConstants.VALIDATION_RECIPE)
-    private Recipe recipe;
 }

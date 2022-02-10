@@ -11,6 +11,7 @@ import com.yanapush.BrewerApp.characteristic.CustomCharacteristicSerializer;
 import com.yanapush.BrewerApp.coffee.CustomCoffeeSerializer;
 import com.yanapush.BrewerApp.user.CustomUserSerializer;
 import lombok.Data;
+import lombok.NonNull;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -46,6 +47,7 @@ public class Recipe {
     private int water_volume;
 
     @Length(max = 230, message = MessageConstants.VALIDATION_RECIPE_DESCRIPTION)
+    @ColumnDefault("this is your best recipe!")
     private String description;
 
     @NotNull(message = MessageConstants.VALIDATION_BREWER)
@@ -63,8 +65,7 @@ public class Recipe {
     @JsonIgnore
     ObjectMapper objectMapper = new ObjectMapper();
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
-            CascadeType.REFRESH})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coffee_id")
     @JsonSerialize(using = CustomCoffeeSerializer.class)
     @NotNull(message = MessageConstants.VALIDATION_COFFEE)

@@ -24,6 +24,7 @@ public class CustomCoffeeSerializer extends StdSerializer<Coffee> {
             throws IOException, JsonProcessingException {
 
         jgen.writeStartObject();
+        jgen.writeNumberField("coffee_id", value.getId());
         jgen.writeStringField("coffee_name", value.getCoffee_name());
         jgen.writeStringField("country", value.getCountry());
         jgen.writeStringField("process", value.getProcess());

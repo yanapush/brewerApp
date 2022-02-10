@@ -1,12 +1,10 @@
 package com.yanapush.BrewerApp.recipe;
 
 import com.yanapush.BrewerApp.characteristic.Characteristic;
-import com.yanapush.BrewerApp.coffee.Coffee;
 import com.yanapush.BrewerApp.user.User;
 import com.yanapush.BrewerApp.user.UserServiceImpl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -71,15 +69,12 @@ public class RecipeController {
 
     @PostMapping
     public void addRecipe(@RequestBody Recipe recipe) {
-        Coffee coffee = recipe.getCoffee();
-        coffee.addRecipe(recipe);
         User currentUser = new User();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             currentUser = userService.getUser(authentication.getName());
         }
         recipe.setAuthor(currentUser);
-        currentUser.addRecipe(recipe);
         service.addRecipe(recipe);
     }
 
@@ -116,6 +111,7 @@ public class RecipeController {
     @PostMapping("/characteristic")
     public ResponseEntity<String> addCharacteristic(@RequestParam int id, @RequestBody Characteristic characteristic) {
         characteristic.setId(id);
+        System.out.println("///// " + characteristic.getId() + " " + characteristic.getAcidity());
             return  (service.addCharacteristics(id, characteristic))
                     ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING_CHARACTERISTICS, HttpStatus.OK)
                     : new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND);
