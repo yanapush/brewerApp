@@ -11,9 +11,9 @@ public interface RecipeService {
 
     public List<Recipe> getRecipesByUser(String username);
 
-    public List<Recipe> getRecipesByCoffee(String coffee);
+    public List<Recipe> getRecipesByCoffee(int coffee);
 
-    public List<Recipe> getRecipesByUserAndCoffee(String user, String coffee);
+    public List<Recipe> getRecipesByUserAndCoffee(String user, int coffee);
 
     public void addRecipe(Recipe recipe);
 

@@ -29,7 +29,7 @@ public class RegisterController {
         user.setUsername(user.getUsername());
 
         Role role = new Role();
-        role.setAuthority("USER");
+        role.setAuthority("ROLE_USER");
         role.setUser(user);
         user.addRole(role);
         return service.addUser(user);

@@ -17,7 +17,8 @@ import java.util.List;
 public class Coffee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int coffee_id;
+    @Column(name = "coffee_id")
+    private int id;
     @NotNull(message = MessageConstants.VALIDATION_COFFEE_NAME)
     @Column(unique = true)
     private String coffee_name;
@@ -27,8 +28,7 @@ public class Coffee {
     @Length(max = 50, message = MessageConstants.VALIDATION_COFFEE_DESCRIPTION)
     private String description;
 
-    @OneToMany(mappedBy = "coffee_id", fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-
+    @OneToMany(mappedBy = "coffee", fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<@NotNull Recipe> recipes;
 
     public void addRecipe(Recipe recipe) {

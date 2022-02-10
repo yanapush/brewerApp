@@ -31,13 +31,13 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<Recipe> getRecipesByCoffee(String coffee) {
-        return repository.findAllByCoffeeName(coffee);
+    public List<Recipe> getRecipesByCoffee(int coffee) {
+        return repository.findAllByCoffeeId(coffee);
     }
 
     @Override
-    public List<Recipe> getRecipesByUserAndCoffee(String user, String coffee) {
-        return repository.findAllByAuthorUsernameAndCoffeeName(user, coffee);
+    public List<Recipe> getRecipesByUserAndCoffee(String user, int coffee) {
+        return repository.findAllByAuthorUsernameAndCoffeeId(user, coffee);
     }
 
     @Override

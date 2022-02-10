@@ -68,7 +68,7 @@ public class Recipe {
     @JoinColumn(name = "coffee_id")
     @JsonSerialize(using = CustomCoffeeSerializer.class)
     @NotNull(message = MessageConstants.VALIDATION_COFFEE)
-    private Coffee coffee_id;
+    private Coffee coffee;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
             CascadeType.REFRESH})

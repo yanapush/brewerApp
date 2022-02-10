@@ -51,13 +51,13 @@ public class RecipeController {
     }
 
     @GetMapping("coffee")
-    public List<Recipe> getRecipesOfCurrentUserByCoffee(@RequestParam String coffee) {
+    public List<Recipe> getRecipesOfCurrentUserByCoffee(@RequestParam int coffee) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return service.getRecipesByUserAndCoffee(authentication.getName(), coffee);
     }
 
     @GetMapping("coffee/community")
-    public List<Recipe> getRecipesOfOtherUsersByCoffee(@RequestParam String coffee) {
+    public List<Recipe> getRecipesOfOtherUsersByCoffee(@RequestParam int coffee) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<Recipe> result = service.getRecipesByCoffee(coffee);
         result.removeAll(service.getRecipesByUserAndCoffee(authentication.getName(), coffee));
@@ -65,13 +65,13 @@ public class RecipeController {
     }
 
     @GetMapping("coffee/default")
-    public List<Recipe> getDefaultRecipesByCoffee(@RequestParam String coffee) {
+    public List<Recipe> getDefaultRecipesByCoffee(@RequestParam int coffee) {
         return service.getRecipesByUserAndCoffee("yanapush", coffee);
     }
 
     @PostMapping
     public void addRecipe(@RequestBody Recipe recipe) {
-        Coffee coffee = recipe.getCoffee_id();
+        Coffee coffee = recipe.getCoffee();
         coffee.addRecipe(recipe);
         User currentUser = new User();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
