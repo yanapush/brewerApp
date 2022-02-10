@@ -1,5 +1,7 @@
 package com.yanapush.BrewerApp.security;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.sql.DataSource;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+    @NonNull
     private DataSource dataSource;
 
     @Override
@@ -23,7 +26,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.jdbcAuthentication().dataSource(dataSource).passwordEncoder(passwordEncoder())
                 .usersByUsernameQuery("SELECT username, password, enabled from users where username = ?")
                 .authoritiesByUsernameQuery("SELECT u.username, a.authority " + "FROM authorities a, users u "
-                        + "WHERE u.username = ? " + "AND u.username = a.username");
+                        + "WHERE u.username = ? " + "AND u.user_id = a.user_id");
     }
 
     @Bean

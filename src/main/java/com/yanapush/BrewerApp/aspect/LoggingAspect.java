@@ -1,6 +1,5 @@
 package com.yanapush.BrewerApp.aspect;
 
-import com.yanapush.BrewerApp.controller.RecipeController;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
