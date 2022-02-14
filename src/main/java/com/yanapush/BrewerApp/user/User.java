@@ -1,9 +1,11 @@
 package com.yanapush.BrewerApp.user;
 
 
+import com.yanapush.BrewerApp.BaseEntity;
 import com.yanapush.BrewerApp.user.role.Role;
 import com.yanapush.BrewerApp.recipe.Recipe;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -14,13 +16,14 @@ import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users", schema = "public")
 @Data
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int user_id;
+    private int id;
 
     @Column(unique = true)
     @NotNull(message = MessageConstants.VALIDATION_USERNAME)

@@ -1,8 +1,10 @@
 package com.yanapush.BrewerApp.characteristic;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.yanapush.BrewerApp.BaseEntity;
 import com.yanapush.BrewerApp.recipe.Recipe;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import javax.persistence.*;
@@ -10,11 +12,12 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "characteristics")
 @JsonSerialize(using = CustomCharacteristicSerializer.class)
 @Data
-public class Characteristic {
+public class Characteristic extends BaseEntity {
 
     @Id
     private int id;

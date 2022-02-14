@@ -1,5 +1,6 @@
 package com.yanapush.BrewerApp.coffee;
 
+import com.yanapush.BrewerApp.BaseEntity;
 import com.yanapush.BrewerApp.recipe.Recipe;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -17,7 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Coffee {
+public class Coffee extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coffee_id")

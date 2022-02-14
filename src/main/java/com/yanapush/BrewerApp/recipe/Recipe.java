@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.vladmihalcea.hibernate.type.json.JsonType;
+import com.yanapush.BrewerApp.BaseEntity;
 import com.yanapush.BrewerApp.coffee.Coffee;
 import com.yanapush.BrewerApp.characteristic.Characteristic;
 import com.yanapush.BrewerApp.user.User;
@@ -11,6 +12,7 @@ import com.yanapush.BrewerApp.characteristic.CustomCharacteristicSerializer;
 import com.yanapush.BrewerApp.coffee.CustomCoffeeSerializer;
 import com.yanapush.BrewerApp.user.CustomUserSerializer;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Type;
@@ -25,11 +27,12 @@ import javax.validation.constraints.PositiveOrZero;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table
 @TypeDefs(@TypeDef(name = "json", typeClass = JsonType.class))
 @Data
-public class Recipe {
+public class Recipe extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
