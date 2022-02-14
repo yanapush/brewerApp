@@ -50,7 +50,7 @@ public class Recipe extends BaseEntity {
     private int water_volume;
 
     @Length(max = 230, message = MessageConstants.VALIDATION_RECIPE_DESCRIPTION)
-    @ColumnDefault("this is your best recipe!")
+//    @ColumnDefault("this is your best recipe!")
     private String description;
 
     @NotNull(message = MessageConstants.VALIDATION_BREWER)
@@ -69,7 +69,6 @@ public class Recipe extends BaseEntity {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coffee_id")
     @JsonSerialize(using = CustomCoffeeSerializer.class)
     @NotNull(message = MessageConstants.VALIDATION_COFFEE)
     private Coffee coffee;

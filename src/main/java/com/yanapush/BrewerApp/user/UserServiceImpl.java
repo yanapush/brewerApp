@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
@@ -17,18 +19,27 @@ public class UserServiceImpl implements UserService{
     UserRepository repository;
 
     @Override
-    public User getUser(int id) {
-        return repository.findById(id).orElse(null);
+    public ResponseEntity<?> getUser(int id) {
+        Optional<User> user = repository.findById(id);
+        return (user.equals(Optional.empty()))
+                ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_USER, HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @Override
-    public User getUser(String username) {
-        return repository.findByUsername(username).orElse(null);
+    public ResponseEntity<?> getUser(String username) {
+        Optional<User> user = repository.findByUsername(username);
+        return (user.equals(Optional.empty()))
+                ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_USER, HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @Override
-    public User getUserByRecipe(Recipe recipe) {
-        return repository.findByRecipesContains(recipe).orElse(null);
+    public ResponseEntity<?> getUserByRecipe(Recipe recipe) {
+        Optional<User> user = repository.findByRecipesContains(recipe);
+        return (user.equals(Optional.empty()))
+                ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_USER, HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @Override
@@ -56,13 +67,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean changeUserPassword(String username, String password) {
-        User user = repository.findByUsername(username).orElse(null);
-        if (user == null) {
-            return false;
+    public ResponseEntity<?> changeUserPassword(String username, String password) {
+        Optional<User> user = repository.findByUsername(username);
+        if (user.equals(Optional.empty())) {
+            return new ResponseEntity<>(MessageConstants.ERROR_CHANGING_PASSWORD, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        user.setPassword(password);
-        repository.save(user);
-        return true;
+        user.get().setPassword(password);
+        repository.save(user.get());
+        return new ResponseEntity<>(MessageConstants.SUCCESS_PASSWORD_CHANGE, HttpStatus.OK);
     }
 }

@@ -1,16 +1,17 @@
 package com.yanapush.BrewerApp.coffee;
 
 import com.yanapush.BrewerApp.coffee.Coffee;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface CoffeeService {
 
-    Coffee getCoffee(int id);
+    ResponseEntity<?> getCoffee(int id);
 
-    List<Coffee> getCoffee();
+    ResponseEntity<?> getCoffee();
 
     void addCoffee(Coffee coffee);
 
-    boolean deleteCoffee(int id);
+    ResponseEntity<?> deleteCoffee(int id);
 }

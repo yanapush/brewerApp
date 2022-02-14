@@ -7,24 +7,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 public class RegisterController {
 
-//    @NonNull
-//    PasswordEncoder passwordEncoder;
+    @NonNull
+    PasswordEncoder passwordEncoder;
 
     @NonNull
     UserServiceImpl service;
 
     @PostMapping("/register")
     public ResponseEntity<?> doRegister(@RequestBody User user) {
-//        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setEnabled(Boolean.TRUE);
-//        user.setPassword(encodedPassword);
+        user.setPassword(encodedPassword);
         user.setUsername(user.getUsername());
 
         Role role = new Role();
@@ -35,20 +35,16 @@ public class RegisterController {
     }
 
     @PostMapping("/change/password")
-    public ResponseEntity<String> changePassword(
+    public ResponseEntity<?> changePassword(
             @RequestBody String password) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        password = passwordEncoder.encode(password);
-        return (service.changeUserPassword(authentication.getName(), password))
-                ? new ResponseEntity<>(MessageConstants.SUCCESS_PASSWORD_CHANGE, HttpStatus.OK)
-                : new ResponseEntity<>(MessageConstants.ERROR_CHANGING_PASSWORD, HttpStatus.INTERNAL_SERVER_ERROR);
+        password = passwordEncoder.encode(password);
+        return service.changeUserPassword(authentication.getName(), password);
     }
 
     @GetMapping("/user")
     public ResponseEntity<?> getUser(@RequestParam int id) {
-        User user = service.getUser(id);
-        return (user == null) ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_USER, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(user, HttpStatus.OK);
+        return service.getUser(id);
     }
 
 }

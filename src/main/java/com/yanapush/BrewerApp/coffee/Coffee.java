@@ -21,7 +21,6 @@ import java.util.List;
 public class Coffee extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "coffee_id")
     private int id;
     @NotNull(message = MessageConstants.VALIDATION_COFFEE_NAME)
     @Column(unique = true)
@@ -34,6 +33,19 @@ public class Coffee extends BaseEntity {
 
     @OneToMany(mappedBy = "coffee", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Recipe> recipes;
+
+    public Coffee(String coffee_name, String country, String process) {
+        this.coffee_name = coffee_name;
+        this.country = country;
+        this.process = process;
+    }
+
+    public Coffee(int id, String coffee_name, String country, String process) {
+        this.id = id;
+        this.coffee_name = coffee_name;
+        this.country = country;
+        this.process = process;
+    }
 
     public void addRecipe(Recipe recipe) {
         if (recipes == null) {

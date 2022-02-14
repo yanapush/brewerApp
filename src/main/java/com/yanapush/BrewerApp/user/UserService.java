@@ -4,10 +4,10 @@ import com.yanapush.BrewerApp.recipe.Recipe;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {
-    User getUser(int id);
-    User getUser(String username);
+    ResponseEntity<?> getUser(int id);
+    ResponseEntity<?> getUser(String username);
 
-    User getUserByRecipe(Recipe recipe);
+    ResponseEntity<?> getUserByRecipe(Recipe recipe);
 
     ResponseEntity<?> addUser(User user);
 
@@ -15,6 +15,6 @@ public interface UserService {
 
     boolean deleteUser(int id);
 
-    boolean changeUserPassword(String username, String password);
+    ResponseEntity<?> changeUserPassword(String username, String password);
 
 }

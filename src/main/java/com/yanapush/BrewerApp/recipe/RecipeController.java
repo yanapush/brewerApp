@@ -28,15 +28,9 @@ public class RecipeController {
 
     @GetMapping()
     public ResponseEntity<?> getRecipeById(@RequestParam int id) {
-        Recipe recipe = service.getRecipe(id);
-        if (recipe == null) {
-            return new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND);
-        }
-        service.addRecipe(recipe);
-        return  new ResponseEntity<>(recipe, HttpStatus.OK);
+        return service.getRecipe(id);
     }
 
-    // todo do i always need to return responseEntity?
     @GetMapping("/all")
     public List<Recipe> getRecipes() {
         return service.getRecipes();
@@ -72,24 +66,20 @@ public class RecipeController {
         User currentUser = new User();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            currentUser = userService.getUser(authentication.getName());
+            currentUser = (User) userService.getUser(authentication.getName()).getBody();
         }
         recipe.setAuthor(currentUser);
         service.addRecipe(recipe);
     }
 
     @PostMapping("/step")
-    public ResponseEntity<String> addStep(@RequestParam int id, @RequestBody Step step) {
-        return (service.addStep(id, step))
-                ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING_STEP, HttpStatus.OK)
-                : new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> addStep(@RequestParam int id, @RequestBody Step step) {
+        return service.addStep(id, step);
     }
 
     @PostMapping("{id}/steps")
-    public ResponseEntity<String> addSteps(@RequestParam int id, @RequestBody List<Step> steps) {
-        return (service.setSteps(id, steps))
-                ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING_STEPS, HttpStatus.OK)
-                : new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> addSteps(@RequestParam int id, @RequestBody List<Step> steps) {
+        return service.setSteps(id, steps);
     }
 
     @GetMapping("/steps")
@@ -98,45 +88,32 @@ public class RecipeController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteRecipe(@RequestParam int id) {
+    public ResponseEntity<?> deleteRecipe(@RequestParam int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!service.getRecipe(id).getAuthor().getUsername().equals(authentication.getName())) {
+        if (!((Recipe)service.getRecipe(id).getBody()).getAuthor().getUsername().equals(authentication.getName())) {
             return new ResponseEntity<>(MessageConstants.DELETING_RECIPE_IS_FORBIDDEN, HttpStatus.FORBIDDEN);
         }
-        return  (service.deleteRecipe(id))
-                ? new ResponseEntity<>(MessageConstants.SUCCESS_DELETING_RECIPE, HttpStatus.OK)
-                : new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND);
+        return  service.deleteRecipe(id);
     }
 
     @PostMapping("/characteristic")
-    public ResponseEntity<String> addCharacteristic(@RequestParam int id, @RequestBody Characteristic characteristic) {
+    public ResponseEntity<?> addCharacteristic(@RequestParam int id, @RequestBody Characteristic characteristic) {
         characteristic.setId(id);
-        System.out.println("///// " + characteristic.getId() + " " + characteristic.getAcidity());
-            return  (service.addCharacteristics(id, characteristic))
-                    ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING_CHARACTERISTICS, HttpStatus.OK)
-                    : new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND);
+        return service.addCharacteristics(id, characteristic);
     }
 
     @GetMapping("/characteristic")
     public ResponseEntity<?> getCharacteristic(@RequestParam int id) {
-        Recipe recipe = service.getRecipe(id);
-        return  (recipe == null)
-                ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(recipe.getCharacteristic(), HttpStatus.OK);
+        return service.getCharacteristics(id);
     }
 
     @PostMapping("/description")
-    public ResponseEntity<String> addDescription(@RequestParam int id, @RequestBody String description) {
-        return  (service.addDescription(id, description))
-                ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING_DESCRIPTION, HttpStatus.OK)
-                : new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> addDescription(@RequestParam int id, @RequestBody String description) {
+        return  service.addDescription(id, description);
     }
 
     @GetMapping("/description")
     public ResponseEntity<?> getDescription(@RequestParam int id) {
-        Recipe recipe = service.getRecipe(id);
-        return  (recipe == null)
-                ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(recipe.getDescription(), HttpStatus.OK);
+        return service.getDescription(id);
     }
 }

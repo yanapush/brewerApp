@@ -3,8 +3,11 @@ package com.yanapush.BrewerApp.coffee;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
@@ -14,13 +17,15 @@ public class CoffeeServiceImpl implements CoffeeService {
     CoffeeRepository coffeeRepository;
 
     @Override
-    public Coffee getCoffee(int id) {
-        return coffeeRepository.findById(id).orElse(null);
+    public ResponseEntity<?> getCoffee(int id) {
+        Optional<Coffee> coffee = coffeeRepository.findById(id);
+        return  (coffee.equals(Optional.empty())) ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_COFFEE, HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(coffee.get(), HttpStatus.OK);
     }
 
     @Override
-    public List<Coffee> getCoffee() {
-        return coffeeRepository.findAll();
+    public ResponseEntity<?> getCoffee() {
+        return new ResponseEntity<>(coffeeRepository.findAll(), HttpStatus.OK);
     }
 
     @Override
@@ -29,11 +34,11 @@ public class CoffeeServiceImpl implements CoffeeService {
     }
 
     @Override
-    public boolean deleteCoffee(int id) {
+    public ResponseEntity<?> deleteCoffee(int id) {
         if (coffeeRepository.existsById(id)) {
             coffeeRepository.deleteById(id);
-            return true;
+            return new ResponseEntity<>(MessageConstants.SUCCESS_DELETING_DELETING, HttpStatus.OK);
         }
-        return false;
+        return new ResponseEntity<>(MessageConstants.ERROR_GETTING_COFFEE, HttpStatus.NOT_FOUND);
     }
 }

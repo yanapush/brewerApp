@@ -2,9 +2,10 @@ package com.yanapush.BrewerApp.coffee;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/coffee")
@@ -16,25 +17,16 @@ public class CoffeeController {
 
     @GetMapping
     public ResponseEntity<?> getCoffee(@RequestParam(required = false) Integer id) {
-        if (id == null) {
-            return new ResponseEntity<>(coffeeServiceImpl.getCoffee(), HttpStatus.OK);
-        } else {
-            Coffee coffee = coffeeServiceImpl.getCoffee(id);
-            return (coffee == null) ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_COFFEE, HttpStatus.NOT_FOUND)
-                    : new ResponseEntity<>(coffee, HttpStatus.OK);
-        }
+        return (id == null) ? coffeeServiceImpl.getCoffee() : coffeeServiceImpl.getCoffee(id);
     }
 
     @PostMapping
-    public void addCoffee(@RequestBody Coffee coffee) {
+    public void addCoffee(@Valid @RequestBody Coffee coffee) {
         coffeeServiceImpl.addCoffee(coffee);
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteCoffee(@RequestParam Integer id) {
-        return (coffeeServiceImpl.deleteCoffee(id))
-                ? new ResponseEntity<>(MessageConstants.SUCCESS_DELETING_DELETING, HttpStatus.OK)
-                : new ResponseEntity<>(MessageConstants.ERROR_GETTING_COFFEE, HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> deleteCoffee(@RequestParam Integer id) {
+        return coffeeServiceImpl.deleteCoffee(id);
     }
-
 }
