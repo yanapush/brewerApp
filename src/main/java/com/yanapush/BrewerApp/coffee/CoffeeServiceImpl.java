@@ -3,6 +3,7 @@ package com.yanapush.BrewerApp.coffee;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -25,7 +26,12 @@ public class CoffeeServiceImpl implements CoffeeService {
 
     @Override
     public ResponseEntity<?> getCoffee() {
-        return new ResponseEntity<>(coffeeRepository.findAll(), HttpStatus.OK);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin",
+                "*");
+        responseHeaders.set("Access-Control-Allow-Credentials", "true");
+
+        return new ResponseEntity<>(coffeeRepository.findAll(), responseHeaders, HttpStatus.OK );
     }
 
     @Override
