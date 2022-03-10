@@ -7,11 +7,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.authentication.AnonymousAuthenticationToken;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -38,21 +39,21 @@ public class RecipeController {
 
     @GetMapping("user")
     public List<Recipe> getRecipesOfCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return service.getRecipesByUser(authentication.getName());
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return service.getRecipesByUser("yanapush");
     }
 
     @GetMapping("coffee")
     public List<Recipe> getRecipesOfCurrentUserByCoffee(@RequestParam int coffee) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return service.getRecipesByUserAndCoffee(authentication.getName(), coffee);
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return service.getRecipesByUserAndCoffee("yanapush", coffee);
     }
 
     @GetMapping("coffee/community")
     public List<Recipe> getRecipesOfOtherUsersByCoffee(@RequestParam int coffee) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<Recipe> result = service.getRecipesByCoffee(coffee);
-        result.removeAll(service.getRecipesByUserAndCoffee(authentication.getName(), coffee));
+        result.removeAll(service.getRecipesByUserAndCoffee("yanapush", coffee));
         return result;
     }
 
@@ -62,18 +63,18 @@ public class RecipeController {
     }
 
     @PostMapping
-    public void addRecipe(@RequestBody Recipe recipe) {
+    public void addRecipe(@Valid @RequestBody Recipe recipe) {
         User currentUser = new User();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            currentUser = (User) userService.getUser(authentication.getName()).getBody();
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            currentUser = (User) userService.getUser("yanapush").getBody();
+//        }
         recipe.setAuthor(currentUser);
         service.addRecipe(recipe);
     }
 
     @PostMapping("/step")
-    public ResponseEntity<?> addStep(@RequestParam int id, @RequestBody Step step) {
+    public ResponseEntity<?> addStep(@RequestParam int id,@Valid @RequestBody Step step) {
         return service.addStep(id, step);
     }
 
@@ -89,15 +90,15 @@ public class RecipeController {
 
     @DeleteMapping
     public ResponseEntity<?> deleteRecipe(@RequestParam int id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!((Recipe)service.getRecipe(id).getBody()).getAuthor().getUsername().equals(authentication.getName())) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!((Recipe)service.getRecipe(id).getBody()).getAuthor().getUsername().equals("yanapush")) {
             return new ResponseEntity<>(MessageConstants.DELETING_RECIPE_IS_FORBIDDEN, HttpStatus.FORBIDDEN);
         }
         return  service.deleteRecipe(id);
     }
 
     @PostMapping("/characteristic")
-    public ResponseEntity<?> addCharacteristic(@RequestParam int id, @RequestBody Characteristic characteristic) {
+    public ResponseEntity<?> addCharacteristic(@RequestParam int id, @Valid @RequestBody Characteristic characteristic) {
         characteristic.setId(id);
         return service.addCharacteristics(id, characteristic);
     }
@@ -108,7 +109,7 @@ public class RecipeController {
     }
 
     @PostMapping("/description")
-    public ResponseEntity<?> addDescription(@RequestParam int id, @RequestBody String description) {
+    public ResponseEntity<?> addDescription(@RequestParam int id,@Valid @RequestBody String description) {
         return  service.addDescription(id, description);
     }
 
