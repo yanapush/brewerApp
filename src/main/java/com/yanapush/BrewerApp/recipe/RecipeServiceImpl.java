@@ -127,7 +127,7 @@ public class RecipeServiceImpl implements RecipeService {
     public ResponseEntity<?> deleteRecipe(int id) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin",
-                "*");
+                "http://localhost:3000");
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
 
         if (repository.existsById(id)) {
