@@ -22,8 +22,13 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public ResponseEntity<?> getRecipe(int id) {
         Optional<Recipe> recipe = repository.findById(id);
-        return (recipe.equals(Optional.empty())) ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(recipe.get(), HttpStatus.OK);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin",
+                "*");
+        responseHeaders.set("Access-Control-Allow-Credentials", "true");
+
+        return (recipe.equals(Optional.empty())) ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE,responseHeaders, HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(recipe.get(),responseHeaders, HttpStatus.OK);
     }
 
     @Override
