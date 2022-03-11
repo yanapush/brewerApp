@@ -97,9 +97,9 @@ public class RecipeController {
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
 
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!((Recipe)service.getRecipe(id).getBody()).getAuthor().getUsername().equals("yanapush")) {
-            return new ResponseEntity<>(MessageConstants.DELETING_RECIPE_IS_FORBIDDEN,responseHeaders, HttpStatus.FORBIDDEN);
-        }
+//        if (!((Recipe)service.getRecipe(id).getBody()).getAuthor().getUsername().equals("yanapush")) {
+//            return new ResponseEntity<>(MessageConstants.DELETING_RECIPE_IS_FORBIDDEN,responseHeaders, HttpStatus.FORBIDDEN);
+//        }
         return  service.deleteRecipe(id);
     }
 
