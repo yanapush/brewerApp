@@ -5,6 +5,7 @@ import com.yanapush.BrewerApp.user.User;
 import com.yanapush.BrewerApp.user.UserServiceImpl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -90,9 +91,14 @@ public class RecipeController {
 
     @DeleteMapping
     public ResponseEntity<?> deleteRecipe(@RequestParam int id) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin",
+                "*");
+        responseHeaders.set("Access-Control-Allow-Credentials", "true");
+
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!((Recipe)service.getRecipe(id).getBody()).getAuthor().getUsername().equals("yanapush")) {
-            return new ResponseEntity<>(MessageConstants.DELETING_RECIPE_IS_FORBIDDEN, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(MessageConstants.DELETING_RECIPE_IS_FORBIDDEN,responseHeaders, HttpStatus.FORBIDDEN);
         }
         return  service.deleteRecipe(id);
     }
