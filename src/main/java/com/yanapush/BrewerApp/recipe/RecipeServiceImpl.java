@@ -4,6 +4,7 @@ import com.yanapush.BrewerApp.characteristic.Characteristic;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -119,10 +120,15 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public ResponseEntity<?> deleteRecipe(int id) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin",
+                "*");
+        responseHeaders.set("Access-Control-Allow-Credentials", "true");
+
         if (repository.existsById(id)) {
             repository.deleteById(id);
-            return new ResponseEntity<>(MessageConstants.SUCCESS_DELETING_RECIPE, HttpStatus.OK);
+            return new ResponseEntity<>(MessageConstants.SUCCESS_DELETING_RECIPE,responseHeaders, HttpStatus.OK);
         }
-        return new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE, responseHeaders, HttpStatus.NOT_FOUND);
     }
 }
