@@ -24,7 +24,7 @@ public class RecipeServiceImpl implements RecipeService {
         Optional<Recipe> recipe = repository.findById(id);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin",
-                "*");
+                "http://localhost:3000");
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
 
         return (recipe.equals(Optional.empty())) ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_RECIPE,responseHeaders, HttpStatus.NOT_FOUND)
