@@ -19,6 +19,7 @@ import javax.validation.constraints.Min;
 public class Characteristic extends BaseEntity {
 
     @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Min(value = 1, message = MessageConstants.VALIDATION_MESSAGE_MIN)

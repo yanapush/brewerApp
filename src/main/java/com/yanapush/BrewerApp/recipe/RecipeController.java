@@ -64,16 +64,21 @@ public class RecipeController {
     }
 
     @PostMapping
-    public void addRecipe(@Valid @RequestBody Recipe recipe) {
+    public ResponseEntity<?> addRecipe(@Valid @RequestBody Recipe recipe) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin",
+                "*");
+        responseHeaders.set("Access-Control-Allow-Credentials", "true");
+
 //        User currentUser = new User();
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        if (!(authentication instanceof AnonymousAuthenticationToken)) {
             User currentUser = (User) (userService.getUser("yanapush").getBody());
 //        }
-//        recipe.getCoffee().addRecipe(recipe);
-        System.out.println("/////////////////// " + currentUser);
         recipe.setAuthor(currentUser);
         service.addRecipe(recipe);
+        return new ResponseEntity<>("it's fine",responseHeaders, HttpStatus.OK);
+
     }
 
     @PostMapping("/step")
