@@ -17,13 +17,14 @@ import java.util.List;
 @Table
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 public class Coffee extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @NotNull(message = MessageConstants.VALIDATION_COFFEE_NAME)
-    @Column(unique = true)
+    @Column( unique = true)
     private String coffee_name;
     private String country;
     @NotNull(message = MessageConstants.VALIDATION_COFFEE_PROCESS)
@@ -31,7 +32,7 @@ public class Coffee extends BaseEntity {
     @Length(max = 50, message = MessageConstants.VALIDATION_COFFEE_DESCRIPTION)
     private String description;
 
-    @OneToMany(mappedBy = "coffee", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "coffee", cascade = CascadeType.ALL)
     private List<Recipe> recipes;
 
     public Coffee(String coffee_name, String country, String process) {

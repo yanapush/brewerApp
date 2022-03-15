@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService{
         Optional<User> user = repository.findByUsername(username);
         return (user.equals(Optional.empty()))
                 ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_USER, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(user, HttpStatus.OK);
+                : new ResponseEntity<>(user.get(), HttpStatus.OK);
     }
 
     @Override

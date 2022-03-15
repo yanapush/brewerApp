@@ -6,6 +6,8 @@ import com.yanapush.BrewerApp.user.role.Role;
 import com.yanapush.BrewerApp.recipe.Recipe;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -19,7 +21,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users", schema = "public")
-@Data
+@Getter
+@Setter
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

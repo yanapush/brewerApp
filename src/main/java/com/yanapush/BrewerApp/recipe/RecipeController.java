@@ -65,11 +65,13 @@ public class RecipeController {
 
     @PostMapping
     public void addRecipe(@Valid @RequestBody Recipe recipe) {
-        User currentUser = new User();
+//        User currentUser = new User();
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            currentUser = (User) userService.getUser("yanapush").getBody();
+            User currentUser = (User) (userService.getUser("yanapush").getBody());
 //        }
+//        recipe.getCoffee().addRecipe(recipe);
+        System.out.println("/////////////////// " + currentUser);
         recipe.setAuthor(currentUser);
         service.addRecipe(recipe);
     }

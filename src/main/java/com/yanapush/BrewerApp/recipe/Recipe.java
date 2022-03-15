@@ -11,16 +11,15 @@ import com.yanapush.BrewerApp.user.User;
 import com.yanapush.BrewerApp.characteristic.CustomCharacteristicSerializer;
 import com.yanapush.BrewerApp.coffee.CustomCoffeeSerializer;
 import com.yanapush.BrewerApp.user.CustomUserSerializer;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import lombok.*;
+import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Parameter;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -29,11 +28,16 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames =
+        { "recipe_name", "author" }) })
 @TypeDefs(@TypeDef(name = "json", typeClass = JsonType.class))
-@Data
+//@Data
+@Setter
+@Getter
 public class Recipe extends BaseEntity {
     @Id
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
+//    @SequenceGenerator(name = "my_seq", sequenceName = "my_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -50,7 +54,6 @@ public class Recipe extends BaseEntity {
     private int water_volume;
 
     @Length(max = 230, message = MessageConstants.VALIDATION_RECIPE_DESCRIPTION)
-//    @ColumnDefault("this is your best recipe!")
     private String description;
 
     @NotNull(message = MessageConstants.VALIDATION_BREWER)
@@ -68,9 +71,9 @@ public class Recipe extends BaseEntity {
     @JsonIgnore
     ObjectMapper objectMapper = new ObjectMapper();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JsonSerialize(using = CustomCoffeeSerializer.class)
-    @NotNull(message = MessageConstants.VALIDATION_COFFEE)
+//    @NotNull(message = MessageConstants.VALIDATION_COFFEE)
     private Coffee coffee;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
