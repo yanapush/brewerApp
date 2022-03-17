@@ -10,7 +10,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/coffee")
 @RequiredArgsConstructor
-@CrossOrigin
 public class CoffeeController {
 
     @NonNull
