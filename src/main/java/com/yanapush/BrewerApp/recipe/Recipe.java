@@ -76,7 +76,7 @@ public class Recipe extends BaseEntity {
 //    @NotNull(message = MessageConstants.VALIDATION_COFFEE)
     private Coffee coffee;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
+    @ManyToOne(cascade = {CascadeType.DETACH,
             CascadeType.REFRESH})
     @JoinColumn(name = "author")
     @JsonSerialize(using = CustomUserSerializer.class)

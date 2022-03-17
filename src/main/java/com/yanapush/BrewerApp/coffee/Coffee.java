@@ -32,7 +32,7 @@ public class Coffee extends BaseEntity {
     @Length(max = 50, message = MessageConstants.VALIDATION_COFFEE_DESCRIPTION)
     private String description;
 
-    @OneToMany(mappedBy = "coffee", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "coffee", cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Recipe> recipes;
 
     public Coffee(String coffee_name, String country, String process) {

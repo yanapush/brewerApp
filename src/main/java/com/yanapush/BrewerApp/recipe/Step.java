@@ -6,8 +6,8 @@ import java.io.Serializable;
 
 @Data
 public class Step implements Serializable {
-    private int start_second;
-    private int duration;
+    private String start_second;
+    private String duration;
     private int water_volume;
     private String description;
 }
