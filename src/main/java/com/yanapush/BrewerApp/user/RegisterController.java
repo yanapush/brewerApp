@@ -14,6 +14,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 public class RegisterController {
 
 //    @NonNull

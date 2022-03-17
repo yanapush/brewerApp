@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/recipe")
 @RequiredArgsConstructor
-
+@CrossOrigin
 public class RecipeController {
 
     @NonNull
@@ -77,7 +77,7 @@ public class RecipeController {
 //        }
         recipe.setAuthor(currentUser);
         service.addRecipe(recipe);
-        return new ResponseEntity<>("it's fine",responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<>("it's fine", responseHeaders , HttpStatus.OK);
 
     }
 
