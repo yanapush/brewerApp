@@ -36,8 +36,6 @@ import java.util.List;
 @Getter
 public class Recipe extends BaseEntity {
     @Id
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
-//    @SequenceGenerator(name = "my_seq", sequenceName = "my_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -73,7 +71,7 @@ public class Recipe extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JsonSerialize(using = CustomCoffeeSerializer.class)
-//    @NotNull(message = MessageConstants.VALIDATION_COFFEE)
+    @NotNull(message = MessageConstants.VALIDATION_COFFEE)
     private Coffee coffee;
 
     @ManyToOne(cascade = {CascadeType.DETACH,

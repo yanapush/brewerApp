@@ -19,7 +19,6 @@ import javax.validation.constraints.Min;
 public class Characteristic extends BaseEntity {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @OneToOne(mappedBy = "characteristic", cascade = CascadeType.ALL)

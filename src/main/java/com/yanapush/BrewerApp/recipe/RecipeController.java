@@ -76,7 +76,6 @@ public class RecipeController {
             User currentUser = (User) (userService.getUser("yanapush").getBody());
 //        }
         recipe.setAuthor(currentUser);
-        System.out.println(recipe);
         service.addRecipe(recipe);
         return new ResponseEntity<>("it's fine", responseHeaders , HttpStatus.OK);
 
