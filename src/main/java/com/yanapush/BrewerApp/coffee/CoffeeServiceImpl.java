@@ -26,12 +26,14 @@ public class CoffeeServiceImpl implements CoffeeService {
 
     @Override
     public ResponseEntity<?> getCoffee() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Access-Control-Allow-Origin",
-                "*");
-        responseHeaders.set("Access-Control-Allow-Credentials", "true");
+//        HttpHeaders responseHeaders = new HttpHeaders();
+//        responseHeaders.set("Access-Control-Allow-Origin",
+//                "*");
+//        responseHeaders.set("Access-Control-Allow-Credentials", "true");
 
-        return new ResponseEntity<>(coffeeRepository.findAll(), responseHeaders, HttpStatus.OK );
+        return new ResponseEntity<>(coffeeRepository.findAll(),
+//                responseHeaders,
+                HttpStatus.OK );
     }
 
     @Override
