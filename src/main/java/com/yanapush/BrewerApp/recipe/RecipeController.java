@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.authentication.AnonymousAuthenticationToken;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -40,21 +40,22 @@ public class RecipeController {
 
     @GetMapping("user")
     public List<Recipe> getRecipesOfCurrentUser() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return service.getRecipesByUser("yanapush");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication.getName());
+        return service.getRecipesByUser(authentication.getName());
     }
 
     @GetMapping("coffee")
     public List<Recipe> getRecipesOfCurrentUserByCoffee(@RequestParam int coffee) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return service.getRecipesByUserAndCoffee("yanapush", coffee);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return service.getRecipesByUserAndCoffee(authentication.getName(), coffee);
     }
 
     @GetMapping("coffee/community")
     public List<Recipe> getRecipesOfOtherUsersByCoffee(@RequestParam int coffee) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<Recipe> result = service.getRecipesByCoffee(coffee);
-        result.removeAll(service.getRecipesByUserAndCoffee("yanapush", coffee));
+        result.removeAll(service.getRecipesByUserAndCoffee(authentication.getName(), coffee));
         return result;
     }
 
@@ -70,11 +71,11 @@ public class RecipeController {
                 "*");
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
 
-//        User currentUser = new User();
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            User currentUser = (User) (userService.getUser("yanapush").getBody());
-//        }
+        User currentUser = new User();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            currentUser = (User) (userService.getUser(authentication.getName()).getBody());
+        }
         recipe.setAuthor(currentUser);
         service.addRecipe(recipe);
         return new ResponseEntity<>("it's fine", responseHeaders , HttpStatus.OK);
@@ -103,10 +104,10 @@ public class RecipeController {
                 "*");
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
 
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (!((Recipe)service.getRecipe(id).getBody()).getAuthor().getUsername().equals("yanapush")) {
-//            return new ResponseEntity<>(MessageConstants.DELETING_RECIPE_IS_FORBIDDEN,responseHeaders, HttpStatus.FORBIDDEN);
-//        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!((Recipe)service.getRecipe(id).getBody()).getAuthor().getUsername().equals("yanapush")) {
+            return new ResponseEntity<>(MessageConstants.DELETING_RECIPE_IS_FORBIDDEN,responseHeaders, HttpStatus.FORBIDDEN);
+        }
         return  service.deleteRecipe(id);
     }
 
