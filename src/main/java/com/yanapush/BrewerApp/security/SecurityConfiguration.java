@@ -43,10 +43,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .antMatchers("/login", "/register").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
 //                .authenticationEntryPoint(restAuthEntryPoint)
-                .and().formLogin().loginPage("/login");
+                .and().formLogin().loginPage("/");
 //                .loginPage("/login.html")
 //                .loginProcessingUrl("/login")
 //                .defaultSuccessUrl("/main", true)
 //                .failureUrl("/login?error=true");
     }
+
+//    @Autowired
+//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+//        auth
+//                .inMemoryAuthentication()
+//                .withUser("user").password("user").roles("USER")
+//                .and()
+//                .withUser("admin").password("admin").roles("ADMIN");
+//    }
 }
