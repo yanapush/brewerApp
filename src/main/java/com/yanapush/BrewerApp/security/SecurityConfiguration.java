@@ -36,8 +36,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin();
-        http.authorizeRequests()
+        http.cors().and().formLogin();
+        http.cors().and().authorizeRequests()
         .antMatchers("/login", "/register", "/coffee").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
 //                .authenticationEntryPoint(restAuthEntryPoint)
