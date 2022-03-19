@@ -44,11 +44,12 @@ public class RegisterController {
             @RequestBody String password) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         password = passwordEncoder.encode(password);
-        return service.changeUserPassword(authentication.getName(), password);
+        return authentication.isAuthenticated() ? service.changeUserPassword(authentication.getName(), password) : new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
     }
 
     @GetMapping("/user")
     public ResponseEntity<?> getUser(@RequestParam String username) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return service.getUser(username);
     }
 
