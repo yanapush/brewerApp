@@ -50,7 +50,7 @@ public class RegisterController {
     @GetMapping("/user")
     public ResponseEntity<?> getUser(@RequestParam String username) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return service.getUser(username);
+        return authentication.isAuthenticated() ? service.getUser(username): new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
     }
 
 }
