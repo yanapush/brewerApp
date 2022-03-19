@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,15 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ResponseEntity<?> getUser(String username) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin",
+                "*");
+        responseHeaders.set("Access-Control-Allow-Credentials", "true");
+
         Optional<User> user = repository.findByUsername(username);
         return (user.equals(Optional.empty()))
-                ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_USER, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(user.get(), HttpStatus.OK);
+                ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_USER,responseHeaders, HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(user.get(),responseHeaders, HttpStatus.OK);
     }
 
     @Override
