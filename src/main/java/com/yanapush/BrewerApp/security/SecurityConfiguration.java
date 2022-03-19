@@ -43,10 +43,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .antMatchers("/login", "/register", "/coffee", "/user").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
 //                .authenticationEntryPoint(restAuthEntryPoint)
-                .and().formLogin()
+                .and().formLogin();
 //                .loginPage("/login.html")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/main", true)
-                .failureUrl("/login?error=true");
+//                .loginProcessingUrl("/login")
+//                .defaultSuccessUrl("/main", true)
+//                .failureUrl("/login?error=true");
     }
 }
