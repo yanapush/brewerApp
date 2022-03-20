@@ -42,12 +42,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.cors().and().authorizeRequests()
         .antMatchers("/login", "/register").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
-//                .authenticationEntryPoint(restAuthEntryPoint)
-                .and().formLogin().loginPage("/");
-//                .loginPage("/login.html")
-//                .loginProcessingUrl("/login")
-//                .defaultSuccessUrl("/main", true)
-//                .failureUrl("/login?error=true");
+                .and()
+                .formLogin().loginPage("/")
+                .usernameParameter("username").passwordParameter("password")
+                .defaultSuccessUrl("hello", true)
+                .and()
+                .httpBasic()
+                .and()
+                .csrf().disable();
     }
 
 //    @Autowired
