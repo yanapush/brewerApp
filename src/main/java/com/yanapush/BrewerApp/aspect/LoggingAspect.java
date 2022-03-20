@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 @Component
 @Aspect
 public class LoggingAspect {
@@ -35,7 +37,8 @@ public class LoggingAspect {
         String methodName = signature.getName();
         logger.info("starting method from service package");
         logger.info("begin of " + methodName);
-        logger.info("with arguments " + joinPoint.getArgs().toString());
+        logger.info("begin of " + signature);
+        logger.info("with arguments " + Arrays.toString(joinPoint.getArgs()));
         Object targetMethodResult = joinPoint.proceed();
         logger.info("end of " + methodName);
         logger.info("with result " + targetMethodResult);
