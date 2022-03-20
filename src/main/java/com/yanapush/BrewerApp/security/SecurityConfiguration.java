@@ -47,8 +47,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .loginPage("http://localhost:3000/login")
                 .usernameParameter("username").passwordParameter("password")
                 .and()
-//                .httpBasic()
-//                .and()
+                .httpBasic()
+                .and()
                 .csrf().disable();
     }
 
