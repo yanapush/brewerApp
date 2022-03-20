@@ -51,7 +51,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login").permitAll()
-                .loginProcessingUrl("/login")
+//                .loginProcessingUrl("/login")
 //                .successForwardUrl("/coffee")
 //                .loginPage("http://localhost:3000/login")
 //                .usernameParameter("username").passwordParameter("password")
