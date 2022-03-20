@@ -45,7 +45,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().loginPage("/")
                 .usernameParameter("username").passwordParameter("password")
-                .defaultSuccessUrl("hello", true)
                 .and()
                 .httpBasic()
                 .and()
