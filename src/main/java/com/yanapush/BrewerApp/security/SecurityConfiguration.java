@@ -38,9 +38,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     @CrossOrigin
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin();
+//        http.formLogin();
         http.cors().and().authorizeRequests()
-        .antMatchers("/login", "/register").permitAll()
+        .antMatchers("/login1", "/register").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
                 .and()
                 .formLogin()
@@ -49,6 +49,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .usernameParameter("username").passwordParameter("password")
                 .and()
                 .httpBasic()
+                .authenticationEntryPoint(getBasicAuthEntryPoint())
                 .and()
                 .csrf().disable();
     }
@@ -61,4 +62,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .and()
 //                .withUser("admin").password("admin").roles("ADMIN");
 //    }
+
+    @Bean
+    public AuthenticationEntryPoint getBasicAuthEntryPoint(){
+        return new AuthenticationEntryPoint();
+    }
 }
