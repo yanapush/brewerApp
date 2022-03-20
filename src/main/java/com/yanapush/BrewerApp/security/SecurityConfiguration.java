@@ -12,6 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.sql.DataSource;
 
@@ -39,7 +42,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @CrossOrigin
     protected void configure(HttpSecurity http) throws Exception {
 //        http.formLogin();
-        http.cors().and().authorizeRequests()
+        http
+                .cors().and()
+                .authorizeRequests()
         .antMatchers("/login", "/register", "/user").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
                 .and()
@@ -53,6 +58,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .authenticationEntryPoint(getBasicAuthEntryPoint())
 //                .and()
 //                .csrf().disable();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
     }
 
 //    @Autowired
