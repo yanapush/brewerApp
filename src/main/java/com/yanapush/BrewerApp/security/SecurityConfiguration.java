@@ -40,11 +40,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 //        http.formLogin();
         http.cors().and().authorizeRequests()
-        .antMatchers("/login", "/register").permitAll()
+        .antMatchers("https://cors-anywhere.herokuapp.com/https://brewer-app.herokuapp.com/login", "/register").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
                 .and()
                 .formLogin()
-                .loginProcessingUrl("/login")
+                .loginProcessingUrl("https://cors-anywhere.herokuapp.com/https://brewer-app.herokuapp.com/login")
 //                .loginPage("http://localhost:3000/login")
 //                .usernameParameter("username").passwordParameter("password")
                 .and()
