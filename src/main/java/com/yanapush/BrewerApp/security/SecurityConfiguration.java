@@ -44,6 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
                 .and()
                 .formLogin()
+                .loginPage("http://localhost:3000/login").permitAll()
                 .loginProcessingUrl("/login")
 //                .loginPage("http://localhost:3000/login")
 //                .usernameParameter("username").passwordParameter("password")
