@@ -43,11 +43,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .antMatchers("/login", "/register").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
                 .and()
-                .formLogin().loginPage("/login")
+                .formLogin()
+                .loginPage("http://localhost:3000/login")
                 .usernameParameter("username").passwordParameter("password")
                 .and()
-                .httpBasic()
-                .and()
+//                .httpBasic()
+//                .and()
                 .csrf().disable();
     }
 
