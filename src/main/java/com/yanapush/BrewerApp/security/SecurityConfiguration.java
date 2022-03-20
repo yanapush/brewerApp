@@ -40,7 +40,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 //        http.formLogin();
         http.cors().and().authorizeRequests()
-        .antMatchers("/login1", "/register").permitAll()
+        .antMatchers("/login", "/register").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
                 .and()
                 .formLogin()
