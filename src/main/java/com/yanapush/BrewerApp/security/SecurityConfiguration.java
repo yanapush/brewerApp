@@ -45,7 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("http://localhost:3000/login").permitAll()
-//                .loginProcessingUrl("https://cors-anywhere.herokuapp.com/https://brewer-app.herokuapp.com/login")
+                .loginProcessingUrl("/login")
 //                .loginPage("http://localhost:3000/login")
                 .usernameParameter("username").passwordParameter("password")
                 .and()
