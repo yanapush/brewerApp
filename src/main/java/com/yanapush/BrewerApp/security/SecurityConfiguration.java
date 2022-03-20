@@ -48,30 +48,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
         .antMatchers("/login", "/register").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
-                .and()
-                .formLogin()
-                .loginPage("/login").permitAll()
+//                .and()
+//                .formLogin()
+//                .loginPage("http://localhost:3000/login").permitAll()
 //                .loginProcessingUrl("/login")
-//                .successForwardUrl("/coffee")
-//                .loginPage("http://localhost:3000/login")
-//                .usernameParameter("username").passwordParameter("password")
-                .and()
-                .httpBasic()
-                .authenticationEntryPoint(getBasicAuthEntryPoint())
+//                .and()
+//                .httpBasic()
+//                .authenticationEntryPoint(getBasicAuthEntryPoint())
                 .and()
                 .csrf().disable();
     }
-
-
-//    @Autowired
-//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//        auth
-//                .inMemoryAuthentication()
-//                .withUser("user").password("user").roles("USER")
-//                .and()
-//                .withUser("admin").password("admin").roles("ADMIN");
-//    }
-
     @Bean
     public AuthenticationEntryPoint getBasicAuthEntryPoint(){
         return new AuthenticationEntryPoint();
