@@ -15,7 +15,7 @@ public class LoggingAspect {
 
     Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
-    @Around("execution(* com.yanapush.BrewerApp.dao.*.*(..))")
+    @Around("execution(* *.*(..))")
     public Object aroundAllRepoMethodsAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String methodName = signature.getName();
@@ -29,7 +29,7 @@ public class LoggingAspect {
         return targetMethodResult;
     }
 
-    @Around("execution(* com.yanapush.BrewerApp.service.*.*(..))")
+    @Around("execution(* *.*(..))")
     public Object aroundAllServiceMethodsAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String methodName = signature.getName();
