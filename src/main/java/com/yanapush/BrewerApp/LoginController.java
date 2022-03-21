@@ -23,10 +23,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 @CrossOrigin
 public class LoginController {
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -38,24 +41,22 @@ public class LoginController {
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) throws InvalidKeySpecException, NoSuchAlgorithmException {
-        System.out.println("////////////////////////");
+
         final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationRequest.getUserName(), authenticationRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         User user=(User)authentication.getPrincipal();
-
         String jwtToken=jWTTokenHelper.generateToken(user.getUsername());
 
         LoginResponse response=new LoginResponse();
-
         response.setToken(jwtToken);
 
-        System.out.println(jwtToken);
 
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/auth/userinfo")
     public ResponseEntity<?> getUserInfo(Principal user){
         User userObj=(User) userDetailsService.loadUserByUsername(user.getName());
@@ -63,6 +64,7 @@ public class LoginController {
         UserInfo userInfo=new UserInfo();
         userInfo.setUsername(userObj.getUsername());
         userInfo.setRoles(userObj.getAuthorities().toArray());
+
 
         return ResponseEntity.ok(userInfo);
 

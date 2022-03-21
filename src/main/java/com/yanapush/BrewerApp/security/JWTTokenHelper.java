@@ -1,5 +1,6 @@
 package com.yanapush.BrewerApp.security;
 
+
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
@@ -16,6 +17,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JWTTokenHelper {
+
+
     @Value("${jwt.auth.app}")
     private String appName;
 
@@ -61,7 +64,7 @@ public class JWTTokenHelper {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(generateExpirationDate())
-                .signWith(SIGNATURE_ALGORITHM, secretKey )
+                .signWith( SIGNATURE_ALGORITHM, secretKey )
                 .compact();
     }
 
@@ -111,10 +114,8 @@ public class JWTTokenHelper {
 
         String authHeader = getAuthHeaderFromHeader( request );
         if ( authHeader != null && authHeader.startsWith("Bearer ")) {
-            System.out.println("auth header is " + authHeader);
             return authHeader.substring(7);
         }
-        System.out.println("oooops");
 
         return null;
     }

@@ -1,6 +1,5 @@
 package com.yanapush.BrewerApp.security;
 
-
 public class AuthenticationRequest {
 
     private String userName;
