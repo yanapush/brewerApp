@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yanapush.BrewerApp.BaseEntity;
 import com.yanapush.BrewerApp.user.User;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "authorities")
 @JsonSerialize(using = CustomRoleSerializer.class)
 @Data
-public class Role extends BaseEntity {
+public class Role extends BaseEntity implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
