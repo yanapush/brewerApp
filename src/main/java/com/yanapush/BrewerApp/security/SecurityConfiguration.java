@@ -24,9 +24,9 @@ import java.util.Arrays;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final String LOGIN_PROCESSING_URL = "/login";
-    private static final String LOGIN_FAILURE_URL = "/login?error";
-    private static final String LOGIN_URL = "/login";
-    private static final String LOGOUT_SUCCESS_URL = "/login";
+    private static final String LOGIN_FAILURE_URL = "/user";
+    private static final String LOGIN_URL = "http://localhost:3000/login";
+    private static final String LOGOUT_SUCCESS_URL = "/coffee";
 
     @NonNull
     private DataSource dataSource;
@@ -47,19 +47,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     @CrossOrigin
     protected void configure(HttpSecurity http) throws Exception {
-//        http.formLogin();
         http
                 .cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()).and()
                 .authorizeRequests()
-        .antMatchers("/", "/register").permitAll()
+        .antMatchers("/", "/register", "user").permitAll()
         .antMatchers("/*").hasAnyRole("ADMIN", "USER")
                 .and()
                 .formLogin()
                 .loginPage(LOGIN_URL).permitAll()
                 .loginProcessingUrl(LOGIN_PROCESSING_URL)
+                .usernameParameter("username").passwordParameter("password")
                 .failureUrl(LOGIN_FAILURE_URL)
-
-                // Configure logout
                 .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL)
                 .and()
                 .csrf().disable();
