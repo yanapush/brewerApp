@@ -55,7 +55,7 @@ public class RegisterController {
         System.out.println(authentication.getName());
         System.out.println(authentication.getAuthorities());
         System.out.println(username);
-        return authentication.isAuthenticated() ? service.getUser(username): new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
+        return authentication.isAuthenticated() ? new ResponseEntity<>(service.getUser(username), HttpStatus.OK): new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
     }
 
 }

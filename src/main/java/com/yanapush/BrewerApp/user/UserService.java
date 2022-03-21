@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface UserService {
     ResponseEntity<?> getUser(int id);
-    ResponseEntity<?> getUser(String username);
+    User getUser(String username);
 
     ResponseEntity<?> getUserByRecipe(Recipe recipe);
 

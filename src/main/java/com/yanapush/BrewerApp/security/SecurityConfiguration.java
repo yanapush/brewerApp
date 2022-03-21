@@ -100,14 +100,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
-    @Autowired
-    private UserServiceImpl userService;
-
-    @Autowired
-    private JWTTokenHelper jWTTokenHelper;
+//    @Autowired
+//    private UserServiceImpl userService;
+//
+//    @Autowired
+//    private JWTTokenHelper jWTTokenHelper;
 
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
+
+//    @Autowired
+//    private JWTAuthenticationFilter jwtFilter;
+
+    @Autowired
+    private JWTTokenProvider tokenProvider;
+
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -131,16 +138,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     @CrossOrigin
     protected void configure(HttpSecurity http) throws Exception {
-
-
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint).and()
-                .authorizeRequests((request) -> request.antMatchers("/h2-console/**", "/api/v1/auth/login").permitAll()
-                        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
-                .addFilterBefore(new JWTAuthenticationFilter(userService, jWTTokenHelper),
-                        UsernamePasswordAuthenticationFilter.class);
-
-        http.csrf().disable().cors().and().headers().frameOptions().disable();
+        http.cors();
+        http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .authorizeRequests().antMatchers("/api/*").permitAll().anyRequest().authenticated();
+        http.apply(new JwtTokenConfigurer(tokenProvider));
     }
-
 }

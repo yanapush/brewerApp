@@ -4,12 +4,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.spec.InvalidKeySpecException;
 
-import com.yanapush.BrewerApp.security.AuthenticationRequest;
-import com.yanapush.BrewerApp.security.JWTTokenHelper;
-import com.yanapush.BrewerApp.security.LoginResponse;
-import com.yanapush.BrewerApp.security.UserInfo;
+import com.nimbusds.jose.shaded.json.JSONObject;
+import com.yanapush.BrewerApp.security.*;
 import com.yanapush.BrewerApp.user.User;
+import com.yanapush.BrewerApp.user.UserServiceImpl;
+import com.yanapush.BrewerApp.user.role.Role;
+import org.codehaus.jettison.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -67,8 +70,31 @@ public class LoginController {
 
 
         return ResponseEntity.ok(userInfo);
+    }
 
+//    @Autowired
+//    private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JWTTokenProvider tokenProvider;
 
+    @Autowired
+    private UserServiceImpl service;
+
+    @PostMapping(value = "/authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> authenticate(@RequestBody User user) {
+        System.out.println("UserResourceImpl : authenticate");
+        JSONObject jsonObject = new JSONObject();
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        if (authentication.isAuthenticated()) {
+            String username = user.getUsername();
+            Role role = service.getUser(username).getRoles().get(0);
+            jsonObject.put("name", authentication.getName());
+            jsonObject.put("authorities", authentication.getAuthorities());
+            jsonObject.put("token", tokenProvider.createToken(username, role));
+            return new ResponseEntity<String>(jsonObject.toString(), HttpStatus.OK);
+        }
+        return null;
     }
 }

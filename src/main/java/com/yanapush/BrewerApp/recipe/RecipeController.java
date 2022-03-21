@@ -74,7 +74,7 @@ public class RecipeController {
         User currentUser = new User();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            currentUser = (User) (userService.getUser(authentication.getName()).getBody());
+            currentUser = (userService.getUser(authentication.getName()));
         }
         recipe.setAuthor(currentUser);
         service.addRecipe(recipe);
