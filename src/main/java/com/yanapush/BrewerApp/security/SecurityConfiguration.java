@@ -24,9 +24,9 @@ import java.util.Arrays;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final String LOGIN_PROCESSING_URL = "/login";
-    private static final String LOGIN_FAILURE_URL = "/user";
+    private static final String LOGIN_FAILURE_URL = "http://localhost:3000/brew";
     private static final String LOGIN_URL = "http://localhost:3000/login";
-    private static final String LOGOUT_SUCCESS_URL = "/coffee";
+    private static final String LOGOUT_SUCCESS_URL = "http://localhost:3000/main";
 
     @NonNull
     private DataSource dataSource;
