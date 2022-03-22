@@ -12,8 +12,11 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.Claims;
@@ -31,31 +34,28 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("JwtTokenFilter : doFilterInternal");
-        String token = request.getHeader("Authorization");
-        if (token != null) {
-            try {
-                Claims claims = tokenProvider.getClaimsFromToken(token);
-                if (!claims.getExpiration().before(new Date())) {
-                    Authentication authentication = tokenProvider.getAuthentication(claims.getSubject());
-                    if (authentication.isAuthenticated()) {
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
+
+        String authToken=tokenProvider.getToken(request);
+
+        if(null!=authToken) {
+
+            String userName=tokenProvider.getUsernameFromToken(authToken);
+
+            if(null!=userName) {
+
+                UserDetails userDetails=tokenProvider.getUser(userName);
+
+                if(tokenProvider.validateToken(authToken, userDetails)) {
+
+                    UsernamePasswordAuthenticationToken authentication=new UsernamePasswordAuthenticationToken(userDetails, null,userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+
                 }
-            } catch (RuntimeException e) {
-                try {
-                    SecurityContextHolder.clearContext();
-                    response.setContentType("application/json");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().println(
-                            new JSONObject().put("exception", "expired or invalid JWT token " + e.getMessage()));
-                } catch (IOException | JSONException e1) {
-                    e1.printStackTrace();
-                }
-                return;
+
             }
-        } else {
-            log.info("first time so creating token using UserResourceImpl - authenticate method");
+
         }
         filterChain.doFilter(request, response);
     }

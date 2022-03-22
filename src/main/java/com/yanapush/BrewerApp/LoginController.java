@@ -3,6 +3,8 @@ package com.yanapush.BrewerApp;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.spec.InvalidKeySpecException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.yanapush.BrewerApp.security.*;
@@ -82,17 +84,19 @@ public class LoginController {
     private UserServiceImpl service;
 
     @PostMapping(value = "/authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> authenticate(@RequestBody User user) {
+    public ResponseEntity<String> authenticate(@RequestBody User user) throws InvalidKeySpecException, NoSuchAlgorithmException {
         System.out.println("UserResourceImpl : authenticate");
         JSONObject jsonObject = new JSONObject();
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         if (authentication.isAuthenticated()) {
             String username = user.getUsername();
-            Role role = service.getUser(username).getRoles().get(0);
+            List<Role> role = service.getUser(username).getRoles();
+            List<String> r = role.stream().map(Role::getAuthority).collect(Collectors.toList());
+            System.out.println(role.stream().map(Role::getAuthority).collect(Collectors.toList()));
             jsonObject.put("name", authentication.getName());
             jsonObject.put("authorities", authentication.getAuthorities());
-            jsonObject.put("token", tokenProvider.createToken(username, role));
+            jsonObject.put("token", tokenProvider.createToken(username));
             return new ResponseEntity<String>(jsonObject.toString(), HttpStatus.OK);
         }
         return null;
