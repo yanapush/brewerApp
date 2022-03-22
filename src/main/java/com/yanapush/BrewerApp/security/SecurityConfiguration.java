@@ -140,7 +140,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors();
         http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/*").permitAll().anyRequest().authenticated();
+                .authorizeRequests().antMatchers("/api/*", "/register").permitAll().anyRequest().authenticated();
         http.apply(new JwtTokenConfigurer(tokenProvider));
     }
 }
