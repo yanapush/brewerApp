@@ -5,10 +5,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.yanapush.BrewerApp.user.role.Role;
+import com.yanapush.BrewerApp.user.User;
+
 
 import java.io.IOException;
 
 public class CustomUserSerializer extends StdSerializer<User> {
+
+    public CustomUserSerializer() {
+        this(null);
+    }
 
     public CustomUserSerializer(Class<User> t) {
         super(t);
