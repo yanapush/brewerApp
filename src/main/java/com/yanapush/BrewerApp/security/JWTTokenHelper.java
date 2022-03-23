@@ -1,6 +1,5 @@
 package com.yanapush.BrewerApp.security;
 
-
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
@@ -18,7 +17,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JWTTokenHelper {
 
-
     @Value("${jwt.auth.app}")
     private String appName;
 
@@ -29,8 +27,6 @@ public class JWTTokenHelper {
     private int expiresIn;
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
-
-
 
     private Claims getAllClaimsFromToken(String token) {
         Claims claims;
@@ -45,7 +41,6 @@ public class JWTTokenHelper {
         return claims;
     }
 
-
     public String getUsernameFromToken(String token) {
         String username;
         try {
@@ -58,7 +53,6 @@ public class JWTTokenHelper {
     }
 
     public String generateToken(String username) throws InvalidKeySpecException, NoSuchAlgorithmException {
-
         return Jwts.builder()
                 .setIssuer( appName )
                 .setSubject(username)
@@ -97,7 +91,6 @@ public class JWTTokenHelper {
         }
         return expireDate;
     }
-
 
     public Date getIssuedAtDateFromToken(String token) {
         Date issueAt;

@@ -17,20 +17,6 @@ public class LoggingAspect {
 
     Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
-//    @Around("execution(* com.yanapush.BrewerApp.*.*.*(..))")
-//    public Object aroundAllRepoMethodsAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
-//        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-//        String methodName = signature.getName();
-//        logger.info("starting method from dao package");
-//        logger.info("begin of " + methodName);
-//        logger.info("with arguments " + joinPoint.getArgs().toString());
-//        Object targetMethodResult = joinPoint.proceed();
-//        logger.info("end of " + methodName);
-//        logger.info("with result " + targetMethodResult);
-//        logger.info("ending method from dao package");
-//        return targetMethodResult;
-//    }
-
     @Around("execution(* com.yanapush.BrewerApp.*.*.*(..))")
     public Object aroundAllServiceMethodsAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();

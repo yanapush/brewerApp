@@ -4,7 +4,6 @@ package com.yanapush.BrewerApp.user;
 import com.yanapush.BrewerApp.BaseEntity;
 import com.yanapush.BrewerApp.user.role.Role;
 import com.yanapush.BrewerApp.recipe.Recipe;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

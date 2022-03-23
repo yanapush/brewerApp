@@ -18,7 +18,6 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.Parameter;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -28,8 +27,8 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames =
-        { "recipe_name", "author" }) })
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames =
+        {"recipe_name", "author"})})
 @TypeDefs(@TypeDef(name = "json", typeClass = JsonType.class))
 //@Data
 @Setter
@@ -45,10 +44,10 @@ public class Recipe extends BaseEntity {
     @Positive
     private int grind_size;
 
-    @Positive (message = MessageConstants.VALIDATION_COFFEE_WEIGHT)
+    @Positive(message = MessageConstants.VALIDATION_COFFEE_WEIGHT)
     private double coffee_weight;
 
-    @Positive (message = MessageConstants.VALIDATION_WATER_VOLUME)
+    @Positive(message = MessageConstants.VALIDATION_WATER_VOLUME)
     private int water_volume;
 
     @Length(max = 230, message = MessageConstants.VALIDATION_RECIPE_DESCRIPTION)

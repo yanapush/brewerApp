@@ -78,12 +78,12 @@ public class RecipeController {
         }
         recipe.setAuthor(currentUser);
         service.addRecipe(recipe);
-        return new ResponseEntity<>("it's fine", responseHeaders , HttpStatus.OK);
+        return new ResponseEntity<>("it's fine", responseHeaders, HttpStatus.OK);
 
     }
 
     @PostMapping("/step")
-    public ResponseEntity<?> addStep(@RequestParam int id,@Valid @RequestBody Step step) {
+    public ResponseEntity<?> addStep(@RequestParam int id, @Valid @RequestBody Step step) {
         return service.addStep(id, step);
     }
 
@@ -105,10 +105,10 @@ public class RecipeController {
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!((Recipe)service.getRecipe(id).getBody()).getAuthor().getUsername().equals("yanapush")) {
-            return new ResponseEntity<>(MessageConstants.DELETING_RECIPE_IS_FORBIDDEN,responseHeaders, HttpStatus.FORBIDDEN);
+        if (!((Recipe) service.getRecipe(id).getBody()).getAuthor().getUsername().equals("yanapush")) {
+            return new ResponseEntity<>(MessageConstants.DELETING_RECIPE_IS_FORBIDDEN, responseHeaders, HttpStatus.FORBIDDEN);
         }
-        return  service.deleteRecipe(id);
+        return service.deleteRecipe(id);
     }
 
     @PostMapping("/characteristic")
@@ -123,8 +123,8 @@ public class RecipeController {
     }
 
     @PostMapping("/description")
-    public ResponseEntity<?> addDescription(@RequestParam int id,@Valid @RequestBody String description) {
-        return  service.addDescription(id, description);
+    public ResponseEntity<?> addDescription(@RequestParam int id, @Valid @RequestBody String description) {
+        return service.addDescription(id, description);
     }
 
     @GetMapping("/description")

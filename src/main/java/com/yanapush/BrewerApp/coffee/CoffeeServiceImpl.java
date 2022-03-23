@@ -7,7 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
 import java.util.Optional;
 
 @org.springframework.stereotype.Service
@@ -26,13 +25,7 @@ public class CoffeeServiceImpl implements CoffeeService {
 
     @Override
     public ResponseEntity<?> getCoffee() {
-//        HttpHeaders responseHeaders = new HttpHeaders();
-//        responseHeaders.set("Access-Control-Allow-Origin",
-//                "*");
-//        responseHeaders.set("Access-Control-Allow-Credentials", "true");
-
         return new ResponseEntity<>(coffeeRepository.findAll(),
-//                responseHeaders,
                 HttpStatus.OK );
     }
 

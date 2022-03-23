@@ -24,7 +24,7 @@ public class Coffee extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @NotNull(message = MessageConstants.VALIDATION_COFFEE_NAME)
-    @Column( unique = true)
+    @Column(unique = true)
     private String coffee_name;
     private String country;
     @NotNull(message = MessageConstants.VALIDATION_COFFEE_PROCESS)

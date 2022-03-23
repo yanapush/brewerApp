@@ -1,9 +1,5 @@
 package com.yanapush.BrewerApp.coffee;
-
-import com.yanapush.BrewerApp.coffee.Coffee;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 public interface CoffeeService {
 

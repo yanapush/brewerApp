@@ -10,10 +10,6 @@ import java.io.IOException;
 
 public class CustomUserSerializer extends StdSerializer<User> {
 
-    public CustomUserSerializer() {
-        this(null);
-    }
-
     public CustomUserSerializer(Class<User> t) {
         super(t);
     }

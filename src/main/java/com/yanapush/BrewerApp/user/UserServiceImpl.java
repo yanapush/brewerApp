@@ -28,30 +28,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 : new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-//    @Override
-//    public ResponseEntity<?> getUser(String username) {
-//        HttpHeaders responseHeaders = new HttpHeaders();
-//        responseHeaders.set("Access-Control-Allow-Origin",
-//                "*");
-//        responseHeaders.set("Access-Control-Allow-Credentials", "true");
-//
-//        Optional<User> user = repository.findByUsername(username);
-//        return (user.equals(Optional.empty()))
-//                ? new ResponseEntity<>(MessageConstants.ERROR_GETTING_USER,responseHeaders, HttpStatus.NOT_FOUND)
-//                : new ResponseEntity<>(user.get(),responseHeaders, HttpStatus.OK);
-//    }
-@Override
-public User getUser(String username) {
-//    HttpHeaders responseHeaders = new HttpHeaders();
-//    responseHeaders.set("Access-Control-Allow-Origin",
-//            "*");
-//    responseHeaders.set("Access-Control-Allow-Credentials", "true");
-
-    Optional<User> user = repository.findByUsername(username);
-    return (user.equals(Optional.empty()))
-            ? null
-            : user.get();
-}
+    @Override
+    public User getUser(String username) {
+        Optional<User> user = repository.findByUsername(username);
+        return (user.equals(Optional.empty()))
+                ? null
+                : user.get();
+    }
 
     @Override
     public ResponseEntity<?> getUserByRecipe(Recipe recipe) {
@@ -98,10 +81,10 @@ public User getUser(String username) {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user=repository.findByUsername(username).orElse(null);
+        User user = repository.findByUsername(username).orElse(null);
 
-        if(null==user) {
-            throw new UsernameNotFoundException("User Not Found with userName "+username);
+        if (null == user) {
+            throw new UsernameNotFoundException("User Not Found with userName " + username);
         }
         return user;
     }

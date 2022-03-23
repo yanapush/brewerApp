@@ -1,4 +1,4 @@
-package com.yanapush.BrewerApp;
+package com.yanapush.BrewerApp.security;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.nimbusds.jose.shaded.json.JSONObject;
-import com.yanapush.BrewerApp.security.*;
 import com.yanapush.BrewerApp.user.User;
 import com.yanapush.BrewerApp.user.UserServiceImpl;
 import com.yanapush.BrewerApp.user.role.Role;
-import org.codehaus.jettison.json.JSONException;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -43,6 +43,17 @@ public class LoginController {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @NonNull
+    PasswordEncoder passwordEncoder;
+
+    @PostMapping("/change/password")
+    public ResponseEntity<?> changePassword(
+            @RequestBody String password) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        password = passwordEncoder.encode(password);
+        return authentication.isAuthenticated() ? service.changeUserPassword(authentication.getName(), password) : new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
+    }
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) throws InvalidKeySpecException, NoSuchAlgorithmException {
@@ -74,9 +85,6 @@ public class LoginController {
         return ResponseEntity.ok(userInfo);
     }
 
-//    @Autowired
-//    private AuthenticationManager authenticationManager;
-
     @Autowired
     private JWTTokenProvider tokenProvider;
 
@@ -100,5 +108,20 @@ public class LoginController {
             return new ResponseEntity<String>(jsonObject.toString(), HttpStatus.OK);
         }
         return null;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> doRegister(@Valid @RequestBody User user) {
+        String encodedPassword
+                = passwordEncoder.encode(user.getPassword());
+        user.setEnabled(Boolean.TRUE);
+        user.setPassword(encodedPassword);
+        user.setUsername(user.getUsername());
+
+        Role role = new Role();
+        role.setAuthority("ROLE_USER");
+        role.setUser(user);
+        user.addRole(role);
+        return service.addUser(user);
     }
 }
