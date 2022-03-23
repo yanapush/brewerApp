@@ -25,7 +25,8 @@ public class CustomUserSerializer extends StdSerializer<User> {
         jgen.writeStartObject();
         jgen.writeStringField("username", value.getUsername());
         jgen.writeStringField("email", value.getEmail());
-        jgen.writeStartArray("roles");
+        jgen.writeFieldName("roles");
+        jgen.writeStartArray();
         for (Role role : value.getRoles()) {
             jgen.writeObject(role);
         }
