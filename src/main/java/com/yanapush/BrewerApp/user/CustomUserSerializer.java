@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.yanapush.BrewerApp.user.role.Role;
 
 import java.io.IOException;
 
@@ -24,7 +25,11 @@ public class CustomUserSerializer extends StdSerializer<User> {
         jgen.writeStartObject();
         jgen.writeStringField("username", value.getUsername());
         jgen.writeStringField("email", value.getEmail());
-        jgen.writeStringField("password", value.getPassword());
+        jgen.writeStartArray("roles");
+        for (Role role : value.getRoles()) {
+            jgen.writeObject(role);
+        }
+        jgen.writeEndArray();
         jgen.writeEndObject();
     }
 }
