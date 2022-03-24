@@ -44,7 +44,7 @@ public class LoginController {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @NonNull
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     @PostMapping("/change/password")
@@ -53,24 +53,6 @@ public class LoginController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         password = passwordEncoder.encode(password);
         return authentication.isAuthenticated() ? service.changeUserPassword(authentication.getName(), password) : new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
-    }
-
-    @PostMapping("/auth/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) throws InvalidKeySpecException, NoSuchAlgorithmException {
-
-        final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authenticationRequest.getUserName(), authenticationRequest.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        User user=(User)authentication.getPrincipal();
-        String jwtToken=jWTTokenHelper.generateToken(user.getUsername());
-
-        LoginResponse response=new LoginResponse();
-        response.setToken(jwtToken);
-
-
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/auth/userinfo")
