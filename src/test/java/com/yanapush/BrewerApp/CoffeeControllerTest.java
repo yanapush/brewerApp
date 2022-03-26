@@ -1,10 +1,9 @@
 package com.yanapush.BrewerApp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yanapush.BrewerApp.coffee.Coffee;
-import com.yanapush.BrewerApp.coffee.CoffeeController;
-import com.yanapush.BrewerApp.coffee.CoffeeServiceImpl;
-import com.yanapush.BrewerApp.coffee.MessageConstants;
+import com.yanapush.BrewerApp.entity.Coffee;
+import com.yanapush.BrewerApp.controller.CoffeeController;
+import com.yanapush.BrewerApp.service.CoffeeServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
