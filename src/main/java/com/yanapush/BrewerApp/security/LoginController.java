@@ -7,10 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.nimbusds.jose.shaded.json.JSONObject;
-import com.yanapush.BrewerApp.user.User;
-import com.yanapush.BrewerApp.user.UserServiceImpl;
-import com.yanapush.BrewerApp.user.role.Role;
-import lombok.NonNull;
+import com.yanapush.BrewerApp.entity.User;
+import com.yanapush.BrewerApp.service.UserServiceImpl;
+import com.yanapush.BrewerApp.entity.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
