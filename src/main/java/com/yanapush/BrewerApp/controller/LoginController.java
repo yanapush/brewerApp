@@ -1,4 +1,4 @@
-package com.yanapush.BrewerApp.security;
+package com.yanapush.BrewerApp.controller;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.nimbusds.jose.shaded.json.JSONObject;
+import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.entity.User;
+import com.yanapush.BrewerApp.security.JWTTokenHelper;
+import com.yanapush.BrewerApp.security.JWTTokenProvider;
+import com.yanapush.BrewerApp.security.UserInfo;
 import com.yanapush.BrewerApp.service.UserServiceImpl;
 import com.yanapush.BrewerApp.entity.Role;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +55,10 @@ public class LoginController {
             @RequestBody String password) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         password = passwordEncoder.encode(password);
-        return authentication.isAuthenticated() ? service.changeUserPassword(authentication.getName(), password) : new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
+        return authentication.isAuthenticated() ? service.changeUserPassword(authentication.getName(), password)
+                ? ResponseEntity.ok(MessageConstants.SUCCESS_ADDING)
+                : new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.INTERNAL_SERVER_ERROR)
+                : new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
     }
 
     @GetMapping("/auth/userinfo")
@@ -61,7 +68,6 @@ public class LoginController {
         UserInfo userInfo=new UserInfo();
         userInfo.setUsername(userObj.getUsername());
         userInfo.setRoles(userObj.getAuthorities().toArray());
-
 
         return ResponseEntity.ok(userInfo);
     }
@@ -81,14 +87,13 @@ public class LoginController {
         if (authentication.isAuthenticated()) {
             String username = user.getUsername();
             List<Role> role = service.getUser(username).getRoles();
-            List<String> r = role.stream().map(Role::getAuthority).collect(Collectors.toList());
             System.out.println(role.stream().map(Role::getAuthority).collect(Collectors.toList()));
             jsonObject.put("name", authentication.getName());
             jsonObject.put("authorities", authentication.getAuthorities());
             jsonObject.put("token", tokenProvider.createToken(username));
-            return new ResponseEntity<String>(jsonObject.toString(), HttpStatus.OK);
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
         }
-        return null;
+        return new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
     }
 
     @PostMapping("/register")
@@ -103,6 +108,6 @@ public class LoginController {
         role.setAuthority("ROLE_USER");
         role.setUser(user);
         user.addRole(role);
-        return service.addUser(user);
+        return service.addUser(user) ? ResponseEntity.ok(MessageConstants.SUCCESS_ADDING) : new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.BAD_REQUEST);
     }
 }

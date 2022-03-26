@@ -5,10 +5,9 @@ import com.yanapush.BrewerApp.dao.CoffeeRepository;
 import com.yanapush.BrewerApp.entity.Coffee;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 
-import java.util.Optional;
+import java.util.List;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
@@ -18,29 +17,26 @@ public class CoffeeServiceImpl implements CoffeeService {
     CoffeeRepository coffeeRepository;
 
     @Override
-    public ResponseEntity<?> getCoffee(int id) {
-        Optional<Coffee> coffee = coffeeRepository.findById(id);
-        return  (coffee.equals(Optional.empty())) ? new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(coffee.get(), HttpStatus.OK);
+    public Coffee getCoffee(int id) {
+        return coffeeRepository.findById(id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
     }
 
     @Override
-    public ResponseEntity<?> getCoffee() {
-        return new ResponseEntity<>(coffeeRepository.findAll(),
-                HttpStatus.OK );
+    public List<Coffee> getCoffee() {
+        return coffeeRepository.findAll();
     }
 
     @Override
-    public void addCoffee(Coffee coffee) {
-        coffeeRepository.save(coffee);
+    public boolean addCoffee(Coffee coffee) {
+        return coffeeRepository.save(coffee) == coffee;
     }
 
     @Override
-    public ResponseEntity<?> deleteCoffee(int id) {
+    public boolean deleteCoffee(int id) {
         if (coffeeRepository.existsById(id)) {
             coffeeRepository.deleteById(id);
-            return new ResponseEntity<>(MessageConstants.SUCCESS_DELETIG, HttpStatus.OK);
+            return true;
         }
-        return new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND);
+        return false;
     }
 }

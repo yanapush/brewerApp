@@ -34,7 +34,7 @@ public class RecipeController {
 
     @GetMapping()
     public ResponseEntity<?> getRecipeById(@RequestParam int id) {
-        return service.getRecipe(id);
+        return ResponseEntity.ok(service.getRecipe(id));
     }
 
     @GetMapping("/all")
@@ -81,24 +81,27 @@ public class RecipeController {
             currentUser = (userService.getUser(authentication.getName()));
         }
         recipe.setAuthor(currentUser);
-        service.addRecipe(recipe);
-        return new ResponseEntity<>("it's fine", responseHeaders, HttpStatus.OK);
 
+        return  service.addRecipe(recipe)
+                ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, responseHeaders, HttpStatus.OK) :
+                new ResponseEntity<>(MessageConstants.ERROR_ADDING, responseHeaders, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/step")
     public ResponseEntity<?> addStep(@RequestParam int id, @Valid @RequestBody Step step) {
-        return service.addStep(id, step);
+        return service.addStep(id, step) ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK) :
+                new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("{id}/steps")
     public ResponseEntity<?> addSteps(@RequestParam int id, @RequestBody List<Step> steps) {
-        return service.setSteps(id, steps);
+        return service.setSteps(id, steps) ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK) :
+                new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/steps")
-    public Object getSteps(@RequestParam int id) {
-        return service.getSteps(id);
+    public ResponseEntity<?> getSteps(@RequestParam int id) {
+        return ResponseEntity.ok(service.getSteps(id));
     }
 
     @DeleteMapping
@@ -109,30 +112,33 @@ public class RecipeController {
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!((Recipe) service.getRecipe(id).getBody()).getAuthor().getUsername().equals("yanapush")) {
+        if (!(service.getRecipe(id).getAuthor().equals("yanapush"))) {
             return new ResponseEntity<>(MessageConstants.IS_FORBIDDEN, responseHeaders, HttpStatus.FORBIDDEN);
         }
-        return service.deleteRecipe(id);
+        return service.deleteRecipe(id) ? new ResponseEntity<>(MessageConstants.SUCCESS_DELETIG, responseHeaders, HttpStatus.OK) :
+                new ResponseEntity<>(MessageConstants.ERROR_DELETING, responseHeaders, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/characteristic")
     public ResponseEntity<?> addCharacteristic(@RequestParam int id, @Valid @RequestBody Characteristic characteristic) {
         characteristic.setId(id);
-        return service.addCharacteristics(id, characteristic);
+        return service.addCharacteristics(id, characteristic) ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK) :
+                new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/characteristic")
     public ResponseEntity<?> getCharacteristic(@RequestParam int id) {
-        return service.getCharacteristics(id);
+        return ResponseEntity.ok(service.getCharacteristics(id));
     }
 
     @PostMapping("/description")
     public ResponseEntity<?> addDescription(@RequestParam int id, @Valid @RequestBody String description) {
-        return service.addDescription(id, description);
+        return service.addDescription(id, description) ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK) :
+                new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/description")
     public ResponseEntity<?> getDescription(@RequestParam int id) {
-        return service.getDescription(id);
+        return ResponseEntity.ok(service.getDescription(id));
     }
 }
