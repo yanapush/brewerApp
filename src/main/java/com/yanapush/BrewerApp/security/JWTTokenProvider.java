@@ -31,6 +31,9 @@ public class JWTTokenProvider implements Serializable {
     @Value("${jwt.auth.expires_in}")
     private int expiresIn;
 
+    @Autowired
+    private UserServiceImpl userService;
+
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
 
     private Claims getAllClaimsFromToken(String token) {
@@ -44,6 +47,21 @@ public class JWTTokenProvider implements Serializable {
             claims = null;
         }
         return claims;
+    }
+
+    private Date generateExpirationDate() {
+        return new Date(new Date().getTime() + expiresIn * 1000);
+    }
+
+    private Date getExpirationDate(String token) {
+        Date expireDate;
+        try {
+            final Claims claims = this.getAllClaimsFromToken(token);
+            expireDate = claims.getExpiration();
+        } catch (Exception e) {
+            expireDate = null;
+        }
+        return expireDate;
     }
 
     public String getUsernameFromToken(String token) {
@@ -68,10 +86,6 @@ public class JWTTokenProvider implements Serializable {
                 .compact();
     }
 
-    private Date generateExpirationDate() {
-        return new Date(new Date().getTime() + expiresIn * 1000);
-    }
-
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (
@@ -86,17 +100,6 @@ public class JWTTokenProvider implements Serializable {
         return expireDate.before(new Date());
     }
 
-    private Date getExpirationDate(String token) {
-        Date expireDate;
-        try {
-            final Claims claims = this.getAllClaimsFromToken(token);
-            expireDate = claims.getExpiration();
-        } catch (Exception e) {
-            expireDate = null;
-        }
-        return expireDate;
-    }
-
     public Date getIssuedAtDateFromToken(String token) {
         Date issueAt;
         try {
@@ -109,7 +112,6 @@ public class JWTTokenProvider implements Serializable {
     }
 
     public String getToken( HttpServletRequest request ) {
-
         String authHeader = getAuthHeaderFromHeader( request );
         if ( authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
@@ -117,9 +119,6 @@ public class JWTTokenProvider implements Serializable {
 
         return null;
     }
-
-    @Autowired
-    private UserServiceImpl userService;
 
     public UserDetails getUser(String username) {
         return userService.loadUserByUsername(username);

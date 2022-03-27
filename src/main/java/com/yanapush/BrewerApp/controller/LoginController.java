@@ -3,13 +3,9 @@ package com.yanapush.BrewerApp.controller;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.spec.InvalidKeySpecException;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.entity.User;
-import com.yanapush.BrewerApp.security.JWTTokenHelper;
 import com.yanapush.BrewerApp.security.JWTTokenProvider;
 import com.yanapush.BrewerApp.security.UserInfo;
 import com.yanapush.BrewerApp.service.UserServiceImpl;
@@ -22,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,9 +50,6 @@ public class LoginController {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    JWTTokenHelper jWTTokenHelper;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
 
     @PostMapping("/change/password")
@@ -84,8 +78,7 @@ public class LoginController {
     public ResponseEntity<String> authenticate(@RequestBody User user) throws InvalidKeySpecException, NoSuchAlgorithmException {
         JSONObject jsonObject = new JSONObject();
         log.info("got request to authenticate user");
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         if (authentication.isAuthenticated()) {
             log.info("user " + user.getUsername() + " is authenticated");
             String username = user.getUsername();
