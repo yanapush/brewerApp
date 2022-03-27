@@ -3,13 +3,9 @@ package com.yanapush.BrewerApp.controller;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.spec.InvalidKeySpecException;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.entity.User;
-import com.yanapush.BrewerApp.security.JWTTokenHelper;
 import com.yanapush.BrewerApp.security.JWTTokenProvider;
 import com.yanapush.BrewerApp.security.UserInfo;
 import com.yanapush.BrewerApp.service.UserServiceImpl;
@@ -51,9 +47,6 @@ public class LoginController {
 
     @Autowired
     private UserDetailsService userDetailsService;
-
-    @Autowired
-    JWTTokenHelper jWTTokenHelper;
 
     @Autowired
     PasswordEncoder passwordEncoder;
