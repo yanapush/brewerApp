@@ -9,6 +9,7 @@ import com.yanapush.BrewerApp.service.RecipeServiceImpl;
 import com.yanapush.BrewerApp.service.UserServiceImpl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.List;
 @RequestMapping("/recipe")
 @RequiredArgsConstructor
 @CrossOrigin
+@Slf4j
 public class RecipeController {
 
     @NonNull
@@ -34,29 +36,33 @@ public class RecipeController {
 
     @GetMapping()
     public ResponseEntity<?> getRecipeById(@RequestParam int id) {
+        log.info("got request to get recipe with id=" + id);
         return ResponseEntity.ok(service.getRecipe(id));
     }
 
     @GetMapping("/all")
     public List<Recipe> getRecipes() {
+        log.info("got request to get all recipes");
         return service.getRecipes();
     }
 
     @GetMapping("user")
     public List<Recipe> getRecipesOfCurrentUser() {
+        log.info("got request to get all recipes of current user");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(authentication.getName());
         return service.getRecipesByUser(authentication.getName());
     }
 
     @GetMapping("coffee")
     public List<Recipe> getRecipesOfCurrentUserByCoffee(@RequestParam int coffee) {
+        log.info("got request to get all recipes of current user with coffee id=" + coffee);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return service.getRecipesByUserAndCoffee(authentication.getName(), coffee);
     }
 
     @GetMapping("coffee/community")
     public List<Recipe> getRecipesOfOtherUsersByCoffee(@RequestParam int coffee) {
+        log.info("got request to get all recipes of other user with coffee id=" + coffee);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<Recipe> result = service.getRecipesByCoffee(coffee);
         result.removeAll(service.getRecipesByUserAndCoffee(authentication.getName(), coffee));
@@ -65,23 +71,23 @@ public class RecipeController {
 
     @GetMapping("coffee/default")
     public List<Recipe> getDefaultRecipesByCoffee(@RequestParam int coffee) {
+        log.info("got request to get all default recipes with coffee id=" + coffee);
         return service.getRecipesByUserAndCoffee("yanapush", coffee);
     }
 
     @PostMapping
     public ResponseEntity<?> addRecipe(@Valid @RequestBody Recipe recipe) {
+        log.info("got request to add recipe " + recipe.toString());
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin",
                 "*");
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
-
         User currentUser = new User();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             currentUser = (userService.getUser(authentication.getName()));
         }
         recipe.setAuthor(currentUser);
-
         return  service.addRecipe(recipe)
                 ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, responseHeaders, HttpStatus.OK) :
                 new ResponseEntity<>(MessageConstants.ERROR_ADDING, responseHeaders, HttpStatus.BAD_REQUEST);
@@ -106,15 +112,17 @@ public class RecipeController {
 
     @DeleteMapping
     public ResponseEntity<?> deleteRecipe(@RequestParam int id) {
+        log.info("got request to delete recipe with id=" + id);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin",
                 "*");
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(service.getRecipe(id).getAuthor().equals("yanapush"))) {
+        if (!(service.getRecipe(id).getAuthor().equals(authentication.getName()))) {
+            log.error("recipe with id=" + id + " doesn't belong to current user");
             return new ResponseEntity<>(MessageConstants.IS_FORBIDDEN, responseHeaders, HttpStatus.FORBIDDEN);
         }
+        log.info("recipe with id=" + id + " belongs to current user");
         return service.deleteRecipe(id) ? new ResponseEntity<>(MessageConstants.SUCCESS_DELETIG, responseHeaders, HttpStatus.OK) :
                 new ResponseEntity<>(MessageConstants.ERROR_DELETING, responseHeaders, HttpStatus.BAD_REQUEST);
     }
