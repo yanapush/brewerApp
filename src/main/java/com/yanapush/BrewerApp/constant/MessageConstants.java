@@ -5,6 +5,7 @@ public class MessageConstants {
     public static final String VALIDATION_MESSAGE_MAX = "value should be less or equals 5";
     public static final String SUCCESS_ADDING = "Entity was successfully added";
     public static final String ERROR_ADDING = "Entity wasn't added";
+    public static final String ERROR_DELETING = "Entity wasn't deleted";
     public static final String SUCCESS_DELETIG = "Entity was successfully deleted";
     public static final String IS_FORBIDDEN = "deleting is forbidden";
     public static final String ERROR_GETTING = "no  such entity";

@@ -5,42 +5,46 @@ import com.yanapush.BrewerApp.dao.CoffeeRepository;
 import com.yanapush.BrewerApp.entity.Coffee;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 
-import java.util.Optional;
+import java.util.List;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
+@Slf4j
 public class CoffeeServiceImpl implements CoffeeService {
 
     @NonNull
     CoffeeRepository coffeeRepository;
 
     @Override
-    public ResponseEntity<?> getCoffee(int id) {
-        Optional<Coffee> coffee = coffeeRepository.findById(id);
-        return  (coffee.equals(Optional.empty())) ? new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(coffee.get(), HttpStatus.OK);
+    public Coffee getCoffee(int id) {
+        log.info("beginning of getting coffee with id=" + id);
+        return coffeeRepository.findById(id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
     }
 
     @Override
-    public ResponseEntity<?> getCoffee() {
-        return new ResponseEntity<>(coffeeRepository.findAll(),
-                HttpStatus.OK );
+    public List<Coffee> getCoffee() {
+        log.info("beginning of getting all coffee");
+        return coffeeRepository.findAll();
     }
 
     @Override
-    public void addCoffee(Coffee coffee) {
-        coffeeRepository.save(coffee);
+    public boolean addCoffee(Coffee coffee) {
+        log.info("beginning of adding coffee " + coffee.toString());
+        return coffeeRepository.save(coffee) == coffee;
     }
 
     @Override
-    public ResponseEntity<?> deleteCoffee(int id) {
+    public boolean deleteCoffee(int id) {
+        log.info("beginning of deleting coffee with id=" + id);
         if (coffeeRepository.existsById(id)) {
+            log.info("coffee exists");
             coffeeRepository.deleteById(id);
-            return new ResponseEntity<>(MessageConstants.SUCCESS_DELETIG, HttpStatus.OK);
+            return true;
         }
-        return new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND);
+        log.error("coffee with such id doesn't exists");
+        return false;
     }
 }

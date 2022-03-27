@@ -6,88 +6,85 @@ import com.yanapush.BrewerApp.entity.Recipe;
 import com.yanapush.BrewerApp.entity.User;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.HibernateException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     @NonNull
     UserRepository repository;
 
     @Override
-    public ResponseEntity<?> getUser(int id) {
-        Optional<User> user = repository.findById(id);
-        return (user.equals(Optional.empty()))
-                ? new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(user, HttpStatus.OK);
+    public User getUser(int id) {
+        log.info("getting user with id=" + id);
+        return repository.findById(id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
     }
 
     @Override
     public User getUser(String username) {
-        Optional<User> user = repository.findByUsername(username);
-        return (user.equals(Optional.empty()))
-                ? null
-                : user.get();
+        log.info("getting user " + username);
+        return repository.findByUsername(username).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
     }
 
     @Override
-    public ResponseEntity<?> getUserByRecipe(Recipe recipe) {
-        Optional<User> user = repository.findByRecipesContains(recipe);
-        return (user.equals(Optional.empty()))
-                ? new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(user, HttpStatus.OK);
+    public User getUserByRecipe(Recipe recipe) {
+        log.info("getting author of recipe=" + recipe.toString());
+        return repository.findByRecipesContains(recipe).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
     }
 
     @Override
-    public ResponseEntity<?> addUser(User user) {
-        try {
-            repository.save(user);
-        } catch (HibernateException e) {
-            return new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.INTERNAL_SERVER_ERROR);
+    public boolean addUser(User user) {
+        log.info("adding user " + user.toString());
+        return repository.save(user) == user;
+    }
+
+    @Override
+    public boolean deleteUser(User user) {
+        log.info("getting user " + user.getUsername());
+        if (repository.existsById(user.getId())) {
+            log.info("deleting user " + user.getUsername());
+            repository.delete(user);
+            return !repository.existsById(user.getId());
         }
-        return new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK);
-    }
-
-    @Override
-    public void deleteUser(User user) {
-        repository.delete(user);
+        log.error("user " + user.getUsername() + " doesn't exist");
+        throw new BadCredentialsException(MessageConstants.ERROR_GETTING);
     }
 
     @Override
     public boolean deleteUser(int id) {
+        log.info("looking for user with id=" + id);
         if (repository.existsById(id)) {
+            log.info("deleting user with id=" + id);
             repository.deleteById(id);
-            return true;
+            return !repository.existsById(id);
         }
-        return false;
+        log.error("user with id=" + id + " doesn't exist");
+        throw new BadCredentialsException(MessageConstants.ERROR_GETTING);
     }
 
     @Override
-    public ResponseEntity<?> changeUserPassword(String username, String password) {
-        Optional<User> user = repository.findByUsername(username);
-        if (user.equals(Optional.empty())) {
-            return new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        user.get().setPassword(password);
-        repository.save(user.get());
-        return new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK);
+    public boolean changeUserPassword(String username, String password) {
+        log.error("looking for user " + username);
+        User user = repository.findByUsername(username).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
+        log.info("setting " + username + " password to " + password);
+        user.setPassword(password);
+        log.info("saving " + username);
+        return repository.save(user) == user;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info("getting user " + username);
         User user = repository.findByUsername(username).orElse(null);
-
         if (null == user) {
-            throw new UsernameNotFoundException("User Not Found with userName " + username);
+            throw new BadCredentialsException("User Not Found with username " + username);
         }
         return user;
     }

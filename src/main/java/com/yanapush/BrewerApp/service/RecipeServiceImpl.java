@@ -7,136 +7,124 @@ import com.yanapush.BrewerApp.entity.Recipe;
 import com.yanapush.BrewerApp.entity.Step;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RecipeServiceImpl implements RecipeService {
 
     @NonNull
     RecipeRepository repository;
 
     @Override
-    public ResponseEntity<?> getRecipe(int id) {
-        Optional<Recipe> recipe = repository.findById(id);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Access-Control-Allow-Origin",
-                "*");
-        responseHeaders.set("Access-Control-Allow-Credentials", "true");
-
-        return (recipe.equals(Optional.empty())) ? new ResponseEntity<>(MessageConstants.ERROR_GETTING,responseHeaders, HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(recipe.get(),responseHeaders, HttpStatus.OK);
+    public Recipe getRecipe(int id) {
+        log.info("getting recipe with id=" + id);
+        return repository.findById(id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
     }
 
     @Override
     public List<Recipe> getRecipes() {
+        log.info("getting all recipes");
         return repository.findAll();
     }
 
     @Override
     public List<Recipe> getRecipesByUser(String username) {
+        log.info("getting all recipes of " + username);
         return repository.findAllByAuthorUsername(username);
     }
 
     @Override
     public List<Recipe> getRecipesByCoffee(int coffee) {
+        log.info("getting all recipes of coffee with id=" + coffee);
         return repository.findAllByCoffeeId(coffee);
     }
 
     @Override
     public List<Recipe> getRecipesByUserAndCoffee(String user, int coffee) {
+        log.info("getting all recipes of " + user + " and coffee with id=" + coffee);
         return repository.findAllByAuthorUsernameAndCoffeeId(user, coffee);
     }
 
     @Override
-    public void addRecipe(Recipe recipe) {
-        repository.save(recipe);
+    public boolean addRecipe(Recipe recipe) {
+        log.info("adding recipe " + recipe.toString());
+        return repository.save(recipe) == recipe;
     }
 
     @Override
-    public ResponseEntity<?> addStep(int recipe_id, Step step) {
-        Optional<Recipe> recipe = repository.findById(recipe_id);
-        if (recipe.equals(Optional.empty())) {
-            return new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND);
-        }
-        recipe.get().addStep(step);
-        repository.save(recipe.get());
-        return new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK);
+    public boolean addStep(int recipe_id, Step step) {
+        log.info("looking for recipe with id=" + recipe_id);
+        Recipe recipe = repository.findById(recipe_id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
+        log.info("adding step " + step.toString() + " to recipe with id=" + recipe_id);
+        recipe.addStep(step);
+        return repository.save(recipe) == recipe;
     }
 
     @Override
-    public ResponseEntity<?> setSteps(int recipe_id, List<Step> steps) {
-        Optional<Recipe> recipe = repository.findById(recipe_id);
-        if (recipe.equals(Optional.empty())) {
-            new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND);
-        }
-        recipe.get().setSteps(steps);
-        repository.save(recipe.get());
-        return new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK);
+    public boolean setSteps(int recipe_id, List<Step> steps) {
+        log.info("looking for recipe with id=" + recipe_id);
+        Recipe recipe = repository.findById(recipe_id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
+        log.info("adding steps " + steps.toString() + " to recipe with id=" + recipe_id);
+        recipe.setSteps(steps);
+        return repository.save(recipe) == recipe;
     }
 
     @Override
     public List<Step> getSteps(int recipe_id) {
-        if (repository.existsById(recipe_id)) {
-            return repository.findById(recipe_id).get().getSteps();
-        }
-        return null;
+        log.info("getting steps of recipe with id=" + recipe_id);
+        return repository.findById(recipe_id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING)).getSteps();
     }
 
     @Override
-    public ResponseEntity<?> addCharacteristics(int recipe_id, Characteristic characteristic) {
-        if (repository.existsById(recipe_id)) {
-            Recipe recipe = repository.findById(recipe_id).get();
-            recipe.setCharacteristic(characteristic);
-            repository.save(recipe);
-            return new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND);
+    public boolean addCharacteristics(int recipe_id, Characteristic characteristic) {
+        log.info("looking for recipe with id=" + recipe_id);
+        Recipe recipe = repository.findById(recipe_id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
+        log.info("adding characteristics " + characteristic.toString() + " to recipe with id=" + recipe_id);
+        recipe.setCharacteristic(characteristic);
+        return repository.save(recipe) == recipe;
     }
 
     @Override
-    public ResponseEntity<?> getCharacteristics(int recipe_id) {
-        return (repository.existsById(recipe_id)) ?
-            new ResponseEntity<>(repository.findById(recipe_id).get().getCharacteristic(), HttpStatus.OK) :
-            new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND);
+    public Characteristic getCharacteristics(int recipe_id) {
+        log.info("getting characteristics of recipe with id=" + recipe_id);
+        return repository.findById(recipe_id)
+                .orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING))
+                .getCharacteristic();
     }
 
     @Override
-    public ResponseEntity<?> addDescription(int recipe_id, String description) {
-        if (repository.existsById(recipe_id)) {
-            Recipe recipe = repository.findById(recipe_id).get();
-            recipe.setDescription(description);
-            repository.save(recipe);
-            return new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND);
+    public boolean addDescription(int recipe_id, String description) {
+        log.info("looking for recipe with id=" + recipe_id);
+        Recipe recipe = repository.findById(recipe_id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
+        log.info("adding description " + description + " to recipe with id=" + recipe_id);
+        recipe.setDescription(description);
+        return repository.save(recipe) == recipe;
     }
 
     @Override
-    public ResponseEntity<?> getDescription(int recipe_id) {
-        return (repository.existsById(recipe_id)) ?
-                new ResponseEntity<>(repository.findById(recipe_id).get().getDescription(), HttpStatus.OK) :
-                new ResponseEntity<>(MessageConstants.ERROR_GETTING, HttpStatus.NOT_FOUND);
+    public String getDescription(int recipe_id) {
+        log.info("getting desc of recipe with id=" + recipe_id);
+        return repository.findById(recipe_id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING))
+                        .getDescription();
     }
 
 
     @Override
-    public ResponseEntity<?> deleteRecipe(int id) {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Access-Control-Allow-Origin",
-                "*");
-        responseHeaders.set("Access-Control-Allow-Credentials", "true");
-
+    public boolean deleteRecipe(int id) {
+        log.info("looking for recipe with id=" + id);
         if (repository.existsById(id)) {
+            log.info("deleting recipe with id=" + id);
             repository.deleteById(id);
-            return new ResponseEntity<>(MessageConstants.SUCCESS_DELETIG,responseHeaders, HttpStatus.OK);
+            return !repository.existsById(id);
+        } else {
+            log.error("recipe with id=" + id + " doesn't exist");
+            throw new BadCredentialsException(MessageConstants.ERROR_GETTING);
         }
-        return new ResponseEntity<>(MessageConstants.ERROR_GETTING, responseHeaders, HttpStatus.NOT_FOUND);
     }
 }
