@@ -42,9 +42,9 @@ public class CoffeeServiceImpl implements CoffeeService {
         if (coffeeRepository.existsById(id)) {
             log.info("coffee exists");
             coffeeRepository.deleteById(id);
-            return !(coffeeRepository.existsById(id));
+            return true;
         }
         log.error("coffee with such id doesn't exists");
-        throw new BadCredentialsException(MessageConstants.ERROR_GETTING);
+        return false;
     }
 }
