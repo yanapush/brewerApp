@@ -1,6 +1,8 @@
 package com.yanapush.BrewerApp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yanapush.BrewerApp.constant.MessageConstants;
+import com.yanapush.BrewerApp.controller.ControllerAdvisor;
 import com.yanapush.BrewerApp.entity.Coffee;
 import com.yanapush.BrewerApp.controller.CoffeeController;
 import com.yanapush.BrewerApp.service.CoffeeServiceImpl;
@@ -8,11 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -23,12 +26,17 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = CoffeeController.class)
+@AutoConfigureMockMvc
+@ContextConfiguration(classes = {CoffeeController.class, CoffeeServiceImpl.class, ControllerAdvisor.class})
+@WebMvcTest
 public class CoffeeControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -51,6 +59,8 @@ public class CoffeeControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/coffee")
+                        .with(csrf())
+                        .with(user(String.valueOf(1)))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -63,6 +73,8 @@ public class CoffeeControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/coffee")
+                        .with(csrf())
+                        .with(user(String.valueOf(1)))
                         .param("id", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -71,24 +83,25 @@ public class CoffeeControllerTest {
 
     @Test
     public void getCoffeeById_NotFound() throws Exception {
-        Mockito.when(coffeeServiceImpl.getCoffee(4)).thenReturn(null);
+        Mockito.when(coffeeServiceImpl.getCoffee(4)).thenThrow(new BadCredentialsException(MessageConstants.ERROR_GETTING));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/coffee")
+                        .with(csrf())
+                        .with(user(String.valueOf(1)))
                         .param("id", "4")
                         .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().string("no coffee with such id"));
+                .andExpect(MockMvcResultMatchers.content().string(matchesPattern("^.*" + MessageConstants.ERROR_GETTING + ".*$")));
     }
 
     @Test
     void whenValidInput_thenReturns200() throws Exception {
-        Coffee coffee = new Coffee();
-        coffee.setCoffee_name("Indonesia Frinsa Manis");
-        coffee.setCountry("Indonesia");
-        coffee.setProcess("anaerobic");
+        when(coffeeServiceImpl.addCoffee(coffee1)).thenReturn(true);
         mockMvc.perform(post("/coffee")
-                        .content(objectMapper.writeValueAsString(coffee))
+                        .with(csrf())
+                        .with(user(String.valueOf(1)))
+                        .content(objectMapper.writeValueAsString(coffee1))
                         .contentType("application/json"))
                 .andExpect(status().isOk());
     }
@@ -98,7 +111,10 @@ public class CoffeeControllerTest {
         Coffee coffee = new Coffee();
         coffee.setCountry("Indonesia");
         coffee.setProcess("anaerobic");
+        when(coffeeServiceImpl.addCoffee(coffee)).thenReturn(false);
         mockMvc.perform(post("/coffee")
+                        .with(csrf())
+                        .with(user(String.valueOf(1)))
                         .content(objectMapper.writeValueAsString(coffee))
                         .contentType("application/json"))
                 .andExpect(status().isBadRequest());
@@ -110,7 +126,10 @@ public class CoffeeControllerTest {
         coffee.setCoffee_name("Indonesia Frinsa Manis");
         coffee.setCountry("Indonesia");
         coffee.setProcess("anaerobic");
+        when(coffeeServiceImpl.addCoffee(coffee)).thenReturn(true);
         mockMvc.perform(post("/coffee")
+                        .with(csrf())
+                        .with(user(String.valueOf(1)))
                         .content(objectMapper.writeValueAsString(coffee))
                         .contentType("application/json"))
                 .andExpect(status().isOk());
@@ -130,10 +149,12 @@ public class CoffeeControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/coffee")
+                        .with(csrf())
+                        .with(user(String.valueOf(1)))
                         .param("id", "1")
                         .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("recipe was successfully deleted"));
+                .andExpect(MockMvcResultMatchers.content().string(MessageConstants.SUCCESS_DELETIG));
 
     }
 
@@ -144,10 +165,12 @@ public class CoffeeControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/coffee")
+                        .with(csrf())
+                        .with(user(String.valueOf(1)))
                         .param("id", "4")
                         .contentType(MediaType.TEXT_PLAIN))
-                .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().string("no coffee with such id"));
+                .andExpect(status().isForbidden())
+                .andExpect(MockMvcResultMatchers.content().string(MessageConstants.IS_FORBIDDEN));
 
     }
 }
