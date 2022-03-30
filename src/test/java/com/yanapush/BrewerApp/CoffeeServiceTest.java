@@ -3,12 +3,14 @@ package com.yanapush.BrewerApp;
 import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.dao.CoffeeRepository;
 import com.yanapush.BrewerApp.entity.Coffee;
+import com.yanapush.BrewerApp.exception.EntityDeletingFailedException;
+import com.yanapush.BrewerApp.exception.EntityNotFoundException;
+import com.yanapush.BrewerApp.exception.EntityNotSavedException;
 import com.yanapush.BrewerApp.service.CoffeeServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.BadCredentialsException;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +25,8 @@ public class CoffeeServiceTest {
 
     @InjectMocks
     CoffeeServiceImpl coffeeServiceImpl;
+
+    MessageConstants constants = new MessageConstants();
 
     Coffee coffee1 = new Coffee(1,"Indonesia Frinsa Manis", "Indonesia", "anaerobic");
     Coffee coffee2 = new Coffee(2,"Kenya Gichataini", "Kenya", "washed");
@@ -54,8 +58,8 @@ public class CoffeeServiceTest {
     @Test
     public void getCoffeeById_error() {
         when(dao.findById(5)).thenReturn(Optional.empty());
-        Exception exception = assertThrows(BadCredentialsException.class, () -> coffeeServiceImpl.getCoffee(5));
-        assertEquals(exception.getMessage(), MessageConstants.ERROR_GETTING);
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> coffeeServiceImpl.getCoffee(5));
+        assertEquals(exception.getMessage(), String.format(constants.ERROR_GETTING_BY_ID, "coffee", 5));
     }
 
     @Test
@@ -67,7 +71,7 @@ public class CoffeeServiceTest {
     @Test
     public void addCoffee_error() {
         when(dao.save(coffee2)).thenReturn(null);
-        assertFalse(coffeeServiceImpl.addCoffee(coffee2));
+        assertThrows(EntityNotSavedException.class, () ->coffeeServiceImpl.addCoffee(coffee2));
     }
 
     @Test
@@ -79,13 +83,14 @@ public class CoffeeServiceTest {
     @Test
     public void deleteCoffee_error() {
         when(dao.existsById(2)).thenReturn(true).thenReturn(true);
-        assertFalse(coffeeServiceImpl.deleteCoffee(2));
+        assertThrows(EntityDeletingFailedException.class, () ->coffeeServiceImpl.deleteCoffee(2));
+
     }
 
     @Test
     public void deleteCoffee_notFound() {
         when(dao.existsById(2)).thenReturn(false).thenReturn(false);
-        Exception exception = assertThrows(BadCredentialsException.class, () -> coffeeServiceImpl.deleteCoffee(2));
-        assertEquals(exception.getMessage(), MessageConstants.ERROR_GETTING);
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> coffeeServiceImpl.deleteCoffee(2));
+        assertEquals(exception.getMessage(), String.format(constants.ERROR_GETTING_BY_ID, "coffee", 2));
     }
 }
