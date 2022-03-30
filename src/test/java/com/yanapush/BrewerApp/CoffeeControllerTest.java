@@ -5,6 +5,7 @@ import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.controller.ControllerAdvisor;
 import com.yanapush.BrewerApp.entity.Coffee;
 import com.yanapush.BrewerApp.controller.CoffeeController;
+import com.yanapush.BrewerApp.exception.EntityNotFoundException;
 import com.yanapush.BrewerApp.service.CoffeeServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -14,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -85,7 +85,7 @@ public class CoffeeControllerTest {
 
     @Test
     public void getCoffeeById_NotFound() throws Exception {
-        Mockito.when(coffeeServiceImpl.getCoffee(4)).thenThrow(new BadCredentialsException(String.format(constants.ERROR_GETTING_BY_ID, "coffee", 4)));
+        Mockito.when(coffeeServiceImpl.getCoffee(4)).thenThrow(new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "coffee", 4)));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/coffee")
@@ -163,7 +163,7 @@ public class CoffeeControllerTest {
     @Test
     public void deleteCoffee_NotFound() throws Exception
     {
-        Mockito.when(coffeeServiceImpl.deleteCoffee(4)).thenReturn(false);
+        Mockito.when(coffeeServiceImpl.deleteCoffee(4)).thenThrow(new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "coffee", 4)));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/coffee")
@@ -171,8 +171,8 @@ public class CoffeeControllerTest {
                         .with(user(String.valueOf(1)))
                         .param("id", "4")
                         .contentType(MediaType.TEXT_PLAIN))
-                .andExpect(status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string(String.format(constants.IS_FORBIDDEN, "coffee")));
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string(matchesPattern("^.*" + String.format(constants.ERROR_GETTING_BY_ID, "coffee", 4)+ ".*$")));
 
     }
 }

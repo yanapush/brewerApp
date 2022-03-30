@@ -33,12 +33,14 @@ public class CoffeeController {
     @PostMapping
     public ResponseEntity<?> addCoffee(@Valid @RequestBody Coffee coffee) {
         log.info("got request to add coffee " + coffee.toString());
-        return (coffeeServiceImpl.addCoffee(coffee)) ? ResponseEntity.ok(String.format(constants.SUCCESS_ADDING, "coffee")) : new ResponseEntity<>(String.format(constants.ERROR_ADDING, "coffee"), HttpStatus.BAD_REQUEST);
+        coffeeServiceImpl.addCoffee(coffee);
+        return ResponseEntity.ok(String.format(constants.SUCCESS_ADDING, "coffee"));
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteCoffee(@RequestParam Integer id) {
         log.info("got request to delete coffee with id=" + id);
-        return (coffeeServiceImpl.deleteCoffee(id)) ? ResponseEntity.ok(String.format(constants.SUCCESS_DELETING, "coffee")) : new ResponseEntity<>(String.format(constants.IS_FORBIDDEN, "coffee"), HttpStatus.FORBIDDEN);
+        coffeeServiceImpl.deleteCoffee(id);
+        return ResponseEntity.ok(String.format(constants.SUCCESS_DELETING, "coffee"));
     }
 }

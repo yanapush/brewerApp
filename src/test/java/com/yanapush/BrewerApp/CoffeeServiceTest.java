@@ -3,7 +3,9 @@ package com.yanapush.BrewerApp;
 import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.dao.CoffeeRepository;
 import com.yanapush.BrewerApp.entity.Coffee;
-import com.yanapush.BrewerApp.exception.CoffeeNotFoundException;
+import com.yanapush.BrewerApp.exception.EntityDeletingFailedException;
+import com.yanapush.BrewerApp.exception.EntityNotFoundException;
+import com.yanapush.BrewerApp.exception.EntityNotSavedException;
 import com.yanapush.BrewerApp.service.CoffeeServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +58,7 @@ public class CoffeeServiceTest {
     @Test
     public void getCoffeeById_error() {
         when(dao.findById(5)).thenReturn(Optional.empty());
-        Exception exception = assertThrows(CoffeeNotFoundException.class, () -> coffeeServiceImpl.getCoffee(5));
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> coffeeServiceImpl.getCoffee(5));
         assertEquals(exception.getMessage(), String.format(constants.ERROR_GETTING_BY_ID, "coffee", 5));
     }
 
@@ -69,7 +71,7 @@ public class CoffeeServiceTest {
     @Test
     public void addCoffee_error() {
         when(dao.save(coffee2)).thenReturn(null);
-        assertFalse(coffeeServiceImpl.addCoffee(coffee2));
+        assertThrows(EntityNotSavedException.class, () ->coffeeServiceImpl.addCoffee(coffee2));
     }
 
     @Test
@@ -81,13 +83,14 @@ public class CoffeeServiceTest {
     @Test
     public void deleteCoffee_error() {
         when(dao.existsById(2)).thenReturn(true).thenReturn(true);
-        assertFalse(coffeeServiceImpl.deleteCoffee(2));
+        assertThrows(EntityDeletingFailedException.class, () ->coffeeServiceImpl.deleteCoffee(2));
+
     }
 
     @Test
     public void deleteCoffee_notFound() {
         when(dao.existsById(2)).thenReturn(false).thenReturn(false);
-        Exception exception = assertThrows(CoffeeNotFoundException.class, () -> coffeeServiceImpl.deleteCoffee(2));
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> coffeeServiceImpl.deleteCoffee(2));
         assertEquals(exception.getMessage(), String.format(constants.ERROR_GETTING_BY_ID, "coffee", 2));
     }
 }

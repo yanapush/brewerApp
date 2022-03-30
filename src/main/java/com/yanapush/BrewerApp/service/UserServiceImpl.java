@@ -4,7 +4,9 @@ import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.dao.UserRepository;
 import com.yanapush.BrewerApp.entity.Recipe;
 import com.yanapush.BrewerApp.entity.User;
-import com.yanapush.BrewerApp.exception.UserNotFoundException;
+import com.yanapush.BrewerApp.exception.EntityDeletingFailedException;
+import com.yanapush.BrewerApp.exception.EntityNotFoundException;
+import com.yanapush.BrewerApp.exception.EntityNotSavedException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,25 +28,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User getUser(int id) {
         log.info("getting user with id=" + id);
-        return repository.findById(id).orElseThrow(() -> new UserNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "user", id)));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "user", id)));
     }
 
     @Override
     public User getUser(String username) {
         log.info("getting user " + username);
-        return repository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(String.format(constants.ERROR_GETTING_BY_FIELD, "user", "username", username)));
+        return repository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_FIELD, "user", "username", username)));
     }
 
     @Override
     public User getUserByRecipe(Recipe recipe) {
         log.info("getting author of recipe=" + recipe.toString());
-        return repository.findByRecipesContains(recipe).orElseThrow(() -> new UserNotFoundException(String.format(constants.ERROR_GETTING, "user")));
+        return repository.findByRecipesContains(recipe).orElseThrow(() -> new EntityNotFoundException(String.format(constants.ERROR_GETTING, "user")));
     }
 
     @Override
     public boolean addUser(User user) {
         log.info("adding user " + user.toString());
-        return repository.save(user) == user;
+        if (repository.save(user) == user) {
+            return true;
+        }
+        throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "user"));
     }
 
     @Override
@@ -53,10 +58,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (repository.existsById(user.getId())) {
             log.info("deleting user " + user.getUsername());
             repository.delete(user);
-            return !repository.existsById(user.getId());
+            if (repository.existsById(user.getId())) {
+                throw new EntityDeletingFailedException(String.format(constants.ERROR_DELETING, "user"));
+            }
+            return true;
         }
         log.error("user " + user.getUsername() + " doesn't exist");
-        throw new UserNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "user", user.getId()));
+        throw new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "user", user.getId()));
     }
 
     @Override
@@ -65,20 +73,26 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (repository.existsById(id)) {
             log.info("deleting user with id=" + id);
             repository.deleteById(id);
-            return !repository.existsById(id);
+            if (repository.existsById(id)) {
+                throw new EntityDeletingFailedException(String.format(constants.ERROR_DELETING_BY_ID, "user", id));
+            }
+            return true;
         }
         log.error("user with id=" + id + " doesn't exist");
-        throw new UserNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "user", id));
+        throw new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "user", id));
     }
 
     @Override
     public boolean changeUserPassword(String username, String password) {
         log.error("looking for user " + username);
-        User user = repository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(String.format(constants.ERROR_GETTING_BY_FIELD, "user", "username", username)));
+        User user = repository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_FIELD, "user", "username", username)));
         log.info("setting " + username + " password to " + password);
         user.setPassword(password);
         log.info("saving " + username);
-        return repository.save(user) == user;
+        if (repository.save(user) != user) {
+            throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "password"));
+        }
+        return true;
     }
 
     @Override
@@ -86,7 +100,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("getting user " + username);
         User user = repository.findByUsername(username).orElse(null);
         if (null == user) {
-            throw new UserNotFoundException(String.format(constants.ERROR_GETTING_BY_FIELD, "user", "username", username));
+            throw new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_FIELD, "user", "username", username));
         }
         return user;
     }

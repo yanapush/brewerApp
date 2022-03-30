@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -61,10 +60,12 @@ public class LoginController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         password = passwordEncoder.encode(password);
         log.info("got request to change password to " + password);
-        return authentication.isAuthenticated() ? service.changeUserPassword(authentication.getName(), password)
-                ? ResponseEntity.ok(String.format(constants.SUCCESS_ADDING, "password"))
-                : new ResponseEntity<>(String.format(constants.ERROR_ADDING, "password"), HttpStatus.INTERNAL_SERVER_ERROR)
-                : new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
+        if (authentication.isAuthenticated()) {
+            service.changeUserPassword(authentication.getName(), password);
+            return ResponseEntity.ok(String.format(constants.SUCCESS_ADDING, "password"));
+        } else {
+            return new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
+        }
     }
 
     @GetMapping("/auth/userinfo")
@@ -107,6 +108,7 @@ public class LoginController {
         role.setAuthority("ROLE_USER");
         role.setUser(user);
         user.addRole(role);
-        return service.addUser(user) ? ResponseEntity.ok(String.format(constants.SUCCESS_ADDING, "user")) : new ResponseEntity<>(String.format(constants.ERROR_ADDING, "user"), HttpStatus.BAD_REQUEST);
+        service.addUser(user);
+        return ResponseEntity.ok(String.format(constants.SUCCESS_ADDING, "user"));
     }
 }
