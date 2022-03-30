@@ -55,7 +55,7 @@ public class CoffeeControllerTest {
     public void getAllCoffee_success() throws Exception {
         List<Coffee> records = new ArrayList<>(Arrays.asList(coffee1, coffee2, coffee3));
 
-        Mockito.when(coffeeServiceImpl.getCoffee()).thenReturn(new ResponseEntity(records, HttpStatus.OK));
+        Mockito.when(coffeeServiceImpl.getCoffee()).thenReturn(records);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/coffee")
@@ -69,7 +69,7 @@ public class CoffeeControllerTest {
 
     @Test
     public void getCoffeeById_success() throws Exception {
-        Mockito.when(coffeeServiceImpl.getCoffee(1)).thenReturn(new ResponseEntity(coffee1, HttpStatus.OK));
+        Mockito.when(coffeeServiceImpl.getCoffee(1)).thenReturn(coffee1);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/coffee")
@@ -145,7 +145,7 @@ public class CoffeeControllerTest {
     @Test
     public void deleteCoffee_success() throws Exception
     {
-        Mockito.when(coffeeServiceImpl.deleteCoffee(1)).thenReturn(new ResponseEntity("recipe was successfully deleted", HttpStatus.OK));
+        Mockito.when(coffeeServiceImpl.deleteCoffee(1)).thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/coffee")
@@ -161,7 +161,7 @@ public class CoffeeControllerTest {
     @Test
     public void deleteCoffee_NotFound() throws Exception
     {
-        Mockito.when(coffeeServiceImpl.deleteCoffee(4)).thenReturn(new ResponseEntity("no coffee with such id", HttpStatus.NOT_FOUND));
+        Mockito.when(coffeeServiceImpl.deleteCoffee(4)).thenReturn(false);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/coffee")

@@ -20,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -75,18 +76,18 @@ public class LoginController {
     }
 
     @PostMapping(value = "/authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> authenticate(@RequestBody User user) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public ResponseEntity<?> authenticate(@RequestBody User user) throws InvalidKeySpecException, NoSuchAlgorithmException {
         JSONObject jsonObject = new JSONObject();
         log.info("got request to authenticate user");
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         if (authentication.isAuthenticated()) {
             log.info("user " + user.getUsername() + " is authenticated");
             String username = user.getUsername();
-            jsonObject.put("name", authentication.getName());
+            Object principal = authentication.getPrincipal();
+            jsonObject.put("name", ((UserDetails)principal).getUsername());
             jsonObject.put("authorities", authentication.getAuthorities());
             jsonObject.put("token", tokenProvider.createToken(username));
-            log.info("returning " + jsonObject);
-            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+            return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         }
         log.error("user " + user.getUsername() + " is not authorized");
         return new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
