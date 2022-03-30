@@ -24,6 +24,8 @@ public class CoffeeServiceTest {
     @InjectMocks
     CoffeeServiceImpl coffeeServiceImpl;
 
+    MessageConstants constants = new MessageConstants();
+
     Coffee coffee1 = new Coffee(1,"Indonesia Frinsa Manis", "Indonesia", "anaerobic");
     Coffee coffee2 = new Coffee(2,"Kenya Gichataini", "Kenya", "washed");
     Coffee coffee3 = new Coffee(3,"Colombia Finca Lourdes", "Colombia", "dry");
@@ -55,7 +57,7 @@ public class CoffeeServiceTest {
     public void getCoffeeById_error() {
         when(dao.findById(5)).thenReturn(Optional.empty());
         Exception exception = assertThrows(BadCredentialsException.class, () -> coffeeServiceImpl.getCoffee(5));
-        assertEquals(exception.getMessage(), MessageConstants.ERROR_GETTING);
+        assertEquals(exception.getMessage(), String.format(constants.ERROR_GETTING_BY_ID, "coffee", 5));
     }
 
     @Test
@@ -86,6 +88,6 @@ public class CoffeeServiceTest {
     public void deleteCoffee_notFound() {
         when(dao.existsById(2)).thenReturn(false).thenReturn(false);
         Exception exception = assertThrows(BadCredentialsException.class, () -> coffeeServiceImpl.deleteCoffee(2));
-        assertEquals(exception.getMessage(), MessageConstants.ERROR_GETTING);
+        assertEquals(exception.getMessage(), String.format(constants.ERROR_GETTING_BY_ID, "coffee", 2));
     }
 }

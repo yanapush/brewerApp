@@ -18,10 +18,12 @@ public class CoffeeServiceImpl implements CoffeeService {
     @NonNull
     CoffeeRepository coffeeRepository;
 
+    MessageConstants constants = new MessageConstants();
+
     @Override
     public Coffee getCoffee(int id) {
         log.info("beginning of getting coffee with id=" + id);
-        return coffeeRepository.findById(id).orElseThrow(() -> new BadCredentialsException(MessageConstants.ERROR_GETTING));
+        return coffeeRepository.findById(id).orElseThrow(() -> new BadCredentialsException(String.format(constants.ERROR_GETTING_BY_ID, "coffee", id)));
     }
 
     @Override
@@ -45,6 +47,6 @@ public class CoffeeServiceImpl implements CoffeeService {
             return !(coffeeRepository.existsById(id));
         }
         log.error("coffee with such id doesn't exists");
-        throw new BadCredentialsException(MessageConstants.ERROR_GETTING);
+        throw new BadCredentialsException(String.format(constants.ERROR_GETTING_BY_ID, "coffee", id));
     }
 }

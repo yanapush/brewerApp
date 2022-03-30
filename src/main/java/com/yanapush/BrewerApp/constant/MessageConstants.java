@@ -7,10 +7,13 @@ public class MessageConstants {
     public final String SUCCESS_ADDING = "%s was successfully added";
     public final String ERROR_ADDING = "%s wasn't added";
     public final String ERROR_DELETING = "%s wasn't deleted";
+    public final String ERROR_DELETING_BY_ID = "%s with id=%d wasn't deleted";
     public final String SUCCESS_DELETING = "%s was successfully deleted";
+    public final String SUCCESS_DELETING_BY_ID = "%s with id=%d was successfully deleted";
     public final String IS_FORBIDDEN = "deleting %s is forbidden";
     public final String ERROR_GETTING = "no  such %s";
     public final String ERROR_GETTING_BY_ID = "no %s with id=%d";
+    public final String ERROR_GETTING_BY_FIELD = "no %s with %s = %s";
 
     public static final String VALIDATION_MESSAGE_MIN = "value should be greater or equals 1";
     public static final String VALIDATION_MESSAGE_MAX = "value should be less or equals 5";

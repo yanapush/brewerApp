@@ -22,6 +22,8 @@ public class CoffeeController {
     @NonNull
     CoffeeServiceImpl coffeeServiceImpl;
 
+    MessageConstants constants = new MessageConstants();
+
     @GetMapping
     public ResponseEntity<?> getCoffee(@RequestParam(required = false) Integer id) {
         log.info("got request to get coffee with id=" + id);
@@ -31,12 +33,12 @@ public class CoffeeController {
     @PostMapping
     public ResponseEntity<?> addCoffee(@Valid @RequestBody Coffee coffee) {
         log.info("got request to add coffee " + coffee.toString());
-        return (coffeeServiceImpl.addCoffee(coffee)) ? ResponseEntity.ok(MessageConstants.SUCCESS_ADDING) : new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.BAD_REQUEST);
+        return (coffeeServiceImpl.addCoffee(coffee)) ? ResponseEntity.ok(String.format(constants.SUCCESS_ADDING, "coffee")) : new ResponseEntity<>(String.format(constants.ERROR_ADDING, "coffee"), HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteCoffee(@RequestParam Integer id) {
         log.info("got request to delete coffee with id=" + id);
-        return (coffeeServiceImpl.deleteCoffee(id)) ? ResponseEntity.ok(MessageConstants.SUCCESS_DELETIG) : new ResponseEntity<>(MessageConstants.IS_FORBIDDEN, HttpStatus.FORBIDDEN);
+        return (coffeeServiceImpl.deleteCoffee(id)) ? ResponseEntity.ok(String.format(constants.SUCCESS_DELETING, "coffee")) : new ResponseEntity<>(String.format(constants.IS_FORBIDDEN, "coffee"), HttpStatus.FORBIDDEN);
     }
 }

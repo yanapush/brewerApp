@@ -47,6 +47,8 @@ public class CoffeeControllerTest {
     @MockBean
     private CoffeeServiceImpl coffeeServiceImpl;
 
+    private final MessageConstants constants = new MessageConstants();
+
     Coffee coffee1 = new Coffee(1,"Indonesia Frinsa Manis", "Indonesia", "anaerobic");
     Coffee coffee2 = new Coffee(2,"Kenya Gichataini", "Kenya", "washed");
     Coffee coffee3 = new Coffee(3,"Colombia Finca Lourdes", "Colombia", "dry");
@@ -83,7 +85,7 @@ public class CoffeeControllerTest {
 
     @Test
     public void getCoffeeById_NotFound() throws Exception {
-        Mockito.when(coffeeServiceImpl.getCoffee(4)).thenThrow(new BadCredentialsException(MessageConstants.ERROR_GETTING));
+        Mockito.when(coffeeServiceImpl.getCoffee(4)).thenThrow(new BadCredentialsException(String.format(constants.ERROR_GETTING_BY_ID, "coffee", 4)));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/coffee")
@@ -92,7 +94,7 @@ public class CoffeeControllerTest {
                         .param("id", "4")
                         .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().string(matchesPattern("^.*" + MessageConstants.ERROR_GETTING + ".*$")));
+                .andExpect(MockMvcResultMatchers.content().string(matchesPattern("^.*" + String.format(constants.ERROR_GETTING_BY_ID, "coffee", 4) + ".*$")));
     }
 
     @Test
@@ -154,7 +156,7 @@ public class CoffeeControllerTest {
                         .param("id", "1")
                         .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string(MessageConstants.SUCCESS_DELETIG));
+                .andExpect(MockMvcResultMatchers.content().string(String.format(constants.SUCCESS_DELETING, "coffee")));
 
     }
 
@@ -170,7 +172,7 @@ public class CoffeeControllerTest {
                         .param("id", "4")
                         .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string(MessageConstants.IS_FORBIDDEN));
+                .andExpect(MockMvcResultMatchers.content().string(String.format(constants.IS_FORBIDDEN, "coffee")));
 
     }
 }

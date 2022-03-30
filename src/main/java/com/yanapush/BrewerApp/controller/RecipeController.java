@@ -34,6 +34,8 @@ public class RecipeController {
     @NonNull
     UserServiceImpl userService;
 
+    MessageConstants constants = new MessageConstants();
+
     @GetMapping()
     public ResponseEntity<?> getRecipeById(@RequestParam int id) {
         log.info("got request to get recipe with id=" + id);
@@ -89,20 +91,20 @@ public class RecipeController {
         }
         recipe.setAuthor(currentUser);
         return  service.addRecipe(recipe)
-                ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, responseHeaders, HttpStatus.OK) :
-                new ResponseEntity<>(MessageConstants.ERROR_ADDING, responseHeaders, HttpStatus.BAD_REQUEST);
+                ? new ResponseEntity<>(String.format(constants.SUCCESS_ADDING, "recipe"), responseHeaders, HttpStatus.OK) :
+                new ResponseEntity<>(String.format(constants.ERROR_ADDING, "recipe"), responseHeaders, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/step")
     public ResponseEntity<?> addStep(@RequestParam int id, @Valid @RequestBody Step step) {
-        return service.addStep(id, step) ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK) :
-                new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.BAD_REQUEST);
+        return service.addStep(id, step) ? new ResponseEntity<>(String.format(constants.SUCCESS_ADDING, "recipe"), HttpStatus.OK) :
+                new ResponseEntity<>(String.format(constants.ERROR_ADDING, "recipe"), HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("{id}/steps")
     public ResponseEntity<?> addSteps(@RequestParam int id, @RequestBody List<Step> steps) {
-        return service.setSteps(id, steps) ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK) :
-                new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.BAD_REQUEST);
+        return service.setSteps(id, steps) ? new ResponseEntity<>(String.format(constants.SUCCESS_ADDING, "recipe"), HttpStatus.OK) :
+                new ResponseEntity<>(String.format(constants.ERROR_ADDING, "recipe"), HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/steps")
@@ -120,18 +122,18 @@ public class RecipeController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(service.getRecipe(id).getAuthor().equals(authentication.getName()))) {
             log.error("recipe with id=" + id + " doesn't belong to current user");
-            return new ResponseEntity<>(MessageConstants.IS_FORBIDDEN, responseHeaders, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(String.format(constants.IS_FORBIDDEN, "recipe"), responseHeaders, HttpStatus.FORBIDDEN);
         }
         log.info("recipe with id=" + id + " belongs to current user");
-        return service.deleteRecipe(id) ? new ResponseEntity<>(MessageConstants.SUCCESS_DELETIG, responseHeaders, HttpStatus.OK) :
-                new ResponseEntity<>(MessageConstants.ERROR_DELETING, responseHeaders, HttpStatus.BAD_REQUEST);
+        return service.deleteRecipe(id) ? new ResponseEntity<>(String.format(constants.SUCCESS_DELETING_BY_ID, "recipe", id), responseHeaders, HttpStatus.OK) :
+                new ResponseEntity<>(String.format(constants.ERROR_DELETING_BY_ID, "recipe", id), responseHeaders, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/characteristic")
     public ResponseEntity<?> addCharacteristic(@RequestParam int id, @Valid @RequestBody Characteristic characteristic) {
         characteristic.setId(id);
-        return service.addCharacteristics(id, characteristic) ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK) :
-                new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.BAD_REQUEST);
+        return service.addCharacteristics(id, characteristic) ? new ResponseEntity<>(String.format(constants.SUCCESS_ADDING, "recipe"), HttpStatus.OK) :
+                new ResponseEntity<>(String.format(constants.ERROR_ADDING, "recipe"), HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/characteristic")
@@ -141,8 +143,8 @@ public class RecipeController {
 
     @PostMapping("/description")
     public ResponseEntity<?> addDescription(@RequestParam int id, @Valid @RequestBody String description) {
-        return service.addDescription(id, description) ? new ResponseEntity<>(MessageConstants.SUCCESS_ADDING, HttpStatus.OK) :
-                new ResponseEntity<>(MessageConstants.ERROR_ADDING, HttpStatus.BAD_REQUEST);
+        return service.addDescription(id, description) ? new ResponseEntity<>(String.format(constants.SUCCESS_ADDING, "recipe"), HttpStatus.OK) :
+                new ResponseEntity<>(String.format(constants.ERROR_ADDING, "recipe"), HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/description")
