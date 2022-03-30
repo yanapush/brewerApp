@@ -3,12 +3,12 @@ package com.yanapush.BrewerApp;
 import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.dao.CoffeeRepository;
 import com.yanapush.BrewerApp.entity.Coffee;
+import com.yanapush.BrewerApp.exception.CoffeeNotFoundException;
 import com.yanapush.BrewerApp.service.CoffeeServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.BadCredentialsException;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +56,7 @@ public class CoffeeServiceTest {
     @Test
     public void getCoffeeById_error() {
         when(dao.findById(5)).thenReturn(Optional.empty());
-        Exception exception = assertThrows(BadCredentialsException.class, () -> coffeeServiceImpl.getCoffee(5));
+        Exception exception = assertThrows(CoffeeNotFoundException.class, () -> coffeeServiceImpl.getCoffee(5));
         assertEquals(exception.getMessage(), String.format(constants.ERROR_GETTING_BY_ID, "coffee", 5));
     }
 
@@ -87,7 +87,7 @@ public class CoffeeServiceTest {
     @Test
     public void deleteCoffee_notFound() {
         when(dao.existsById(2)).thenReturn(false).thenReturn(false);
-        Exception exception = assertThrows(BadCredentialsException.class, () -> coffeeServiceImpl.deleteCoffee(2));
+        Exception exception = assertThrows(CoffeeNotFoundException.class, () -> coffeeServiceImpl.deleteCoffee(2));
         assertEquals(exception.getMessage(), String.format(constants.ERROR_GETTING_BY_ID, "coffee", 2));
     }
 }

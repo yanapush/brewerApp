@@ -3,10 +3,10 @@ package com.yanapush.BrewerApp.service;
 import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.dao.CoffeeRepository;
 import com.yanapush.BrewerApp.entity.Coffee;
+import com.yanapush.BrewerApp.exception.CoffeeNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class CoffeeServiceImpl implements CoffeeService {
     @Override
     public Coffee getCoffee(int id) {
         log.info("beginning of getting coffee with id=" + id);
-        return coffeeRepository.findById(id).orElseThrow(() -> new BadCredentialsException(String.format(constants.ERROR_GETTING_BY_ID, "coffee", id)));
+        return coffeeRepository.findById(id).orElseThrow(() -> new CoffeeNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "coffee", id)));
     }
 
     @Override
@@ -47,6 +47,6 @@ public class CoffeeServiceImpl implements CoffeeService {
             return !(coffeeRepository.existsById(id));
         }
         log.error("coffee with such id doesn't exists");
-        throw new BadCredentialsException(String.format(constants.ERROR_GETTING_BY_ID, "coffee", id));
+        throw new CoffeeNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "coffee", id));
     }
 }
