@@ -9,7 +9,7 @@ public interface CoffeeService {
 
     List<Coffee> getCoffee();
 
-    boolean addCoffee(Coffee coffee);
+    Coffee addCoffee(Coffee coffee);
 
     boolean deleteCoffee(int id);
 }

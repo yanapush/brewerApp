@@ -17,19 +17,19 @@ public interface RecipeService {
 
     public List<Recipe> getRecipesByUserAndCoffee(String user, int coffee);
 
-    public boolean addRecipe(Recipe recipe);
+    public Recipe addRecipe(Recipe recipe);
 
-    public boolean addStep(int recipe_id, Step step);
+    public Recipe addStep(int recipe_id, Step step);
 
-    public boolean setSteps(int recipe_id, List<Step> steps);
+    public Recipe setSteps(int recipe_id, List<Step> steps);
 
     public List<Step> getSteps(int recipe_id);
 
-    public boolean addCharacteristics(int recipe_id, Characteristic characteristic);
+    public Recipe addCharacteristics(int recipe_id, Characteristic characteristic);
 
     public Characteristic getCharacteristics(int recipe_id);
 
-    public boolean addDescription(int recipe_id, String description);
+    public Recipe addDescription(int recipe_id, String description);
 
     public String getDescription(int recipe_id);
 

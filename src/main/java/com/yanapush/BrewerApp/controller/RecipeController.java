@@ -10,6 +10,7 @@ import com.yanapush.BrewerApp.service.UserServiceImpl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/recipe")
@@ -31,10 +34,8 @@ public class RecipeController {
     @NonNull
     RecipeServiceImpl service;
 
-    @NonNull
-    UserServiceImpl userService;
-
-    MessageConstants constants = new MessageConstants();
+    @Autowired
+    private MessageConstants constants;
 
     @GetMapping()
     public ResponseEntity<?> getRecipeById(@RequestParam int id) {
@@ -80,30 +81,32 @@ public class RecipeController {
     @PostMapping
     public ResponseEntity<?> addRecipe(@Valid @RequestBody Recipe recipe) {
         log.info("got request to add recipe " + recipe.toString());
+
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin",
                 "*");
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
-        User currentUser = new User();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            currentUser = (userService.getUser(authentication.getName()));
-        }
-        recipe.setAuthor(currentUser);
-        service.addRecipe(recipe);
-        return new ResponseEntity<>(String.format(constants.SUCCESS_ADDING, "recipe"), responseHeaders, HttpStatus.OK);
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("recipe", service.addRecipe(recipe));
+        body.put("message", String.format(constants.SUCCESS_ADDING, "recipe"));
+        return new ResponseEntity<>(body, responseHeaders, HttpStatus.OK);
     }
 
     @PostMapping("/step")
     public ResponseEntity<?> addStep(@RequestParam int id, @Valid @RequestBody Step step) {
-        service.addStep(id, step);
-        return new ResponseEntity<>(String.format(constants.SUCCESS_ADDING, "recipe"), HttpStatus.OK);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("recipe", service.addStep(id, step));
+        body.put("message", String.format(constants.SUCCESS_ADDING_TO, "step", "recipe"));
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @PostMapping("{id}/steps")
     public ResponseEntity<?> addSteps(@RequestParam int id, @RequestBody List<Step> steps) {
-        service.setSteps(id, steps);
-        return new ResponseEntity<>(String.format(constants.SUCCESS_ADDING, "recipe"), HttpStatus.OK);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("recipe",  service.setSteps(id, steps));
+        body.put("message", String.format(constants.SUCCESS_ADDING_TO, "steps", "recipe"));
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @GetMapping("/steps")
@@ -114,25 +117,30 @@ public class RecipeController {
     @DeleteMapping
     public ResponseEntity<?> deleteRecipe(@RequestParam int id) {
         log.info("got request to delete recipe with id=" + id);
+
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Access-Control-Allow-Origin",
                 "*");
         responseHeaders.set("Access-Control-Allow-Credentials", "true");
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(service.getRecipe(id).getAuthor().equals(authentication.getName()))) {
             log.error("recipe with id=" + id + " doesn't belong to current user");
             return new ResponseEntity<>(String.format(constants.IS_FORBIDDEN, "recipe"), responseHeaders, HttpStatus.FORBIDDEN);
         }
         log.info("recipe with id=" + id + " belongs to current user");
-        service.deleteRecipe(id);
-        return new ResponseEntity<>(String.format(constants.SUCCESS_DELETING_BY_ID, "recipe", id), responseHeaders, HttpStatus.OK);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("isSuccess",   service.deleteRecipe(id));
+        body.put("message", String.format(constants.SUCCESS_DELETING_BY_ID, "recipe", id));
+        return new ResponseEntity<>(body, responseHeaders, HttpStatus.OK);
     }
 
     @PostMapping("/characteristic")
     public ResponseEntity<?> addCharacteristic(@RequestParam int id, @Valid @RequestBody Characteristic characteristic) {
-        characteristic.setId(id);
-        service.addCharacteristics(id, characteristic);
-        return new ResponseEntity<>(String.format(constants.SUCCESS_ADDING, "recipe"), HttpStatus.OK);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("recipe", service.addCharacteristics(id, characteristic));
+        body.put("message", String.format(constants.SUCCESS_ADDING_TO, "characteristics", "recipe"));
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @GetMapping("/characteristic")
@@ -142,8 +150,10 @@ public class RecipeController {
 
     @PostMapping("/description")
     public ResponseEntity<?> addDescription(@RequestParam int id, @Valid @RequestBody String description) {
-        service.addDescription(id, description);
-        return new ResponseEntity<>(String.format(constants.SUCCESS_ADDING, "recipe"), HttpStatus.OK);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("recipe", service.addDescription(id, description));
+        body.put("message", String.format(constants.SUCCESS_ADDING_TO, "description", "recipe"));
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @GetMapping("/description")

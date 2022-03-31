@@ -99,7 +99,7 @@ public class CoffeeControllerTest {
 
     @Test
     void whenValidInput_thenReturns200() throws Exception {
-        when(coffeeServiceImpl.addCoffee(coffee1)).thenReturn(true);
+        when(coffeeServiceImpl.addCoffee(coffee1)).thenReturn(coffee1);
         mockMvc.perform(post("/coffee")
                         .with(csrf())
                         .with(user(String.valueOf(1)))
@@ -113,7 +113,7 @@ public class CoffeeControllerTest {
         Coffee coffee = new Coffee();
         coffee.setCountry("Indonesia");
         coffee.setProcess("anaerobic");
-        when(coffeeServiceImpl.addCoffee(coffee)).thenReturn(false);
+        when(coffeeServiceImpl.addCoffee(coffee)).thenReturn(null);
         mockMvc.perform(post("/coffee")
                         .with(csrf())
                         .with(user(String.valueOf(1)))
@@ -128,7 +128,7 @@ public class CoffeeControllerTest {
         coffee.setCoffee_name("Indonesia Frinsa Manis");
         coffee.setCountry("Indonesia");
         coffee.setProcess("anaerobic");
-        when(coffeeServiceImpl.addCoffee(coffee)).thenReturn(true);
+        when(coffeeServiceImpl.addCoffee(coffee)).thenReturn(coffee);
         mockMvc.perform(post("/coffee")
                         .with(csrf())
                         .with(user(String.valueOf(1)))

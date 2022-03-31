@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageConstants {
     public final String SUCCESS_ADDING = "%s was successfully added";
+    public final String SUCCESS_ADDING_TO = "%s was successfully added to %s";
     public final String ERROR_ADDING = "%s wasn't added";
     public final String ERROR_DELETING = "%s wasn't deleted";
     public final String ERROR_DELETING_BY_ID = "%s with id=%d wasn't deleted";

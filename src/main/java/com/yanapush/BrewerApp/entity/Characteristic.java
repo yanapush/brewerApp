@@ -23,7 +23,6 @@ public class Characteristic extends BaseEntity {
     @OneToOne(mappedBy = "characteristic", cascade = CascadeType.ALL)
     private Recipe recipe;
 
-
     @Min(value = 1, message = MessageConstants.VALIDATION_MESSAGE_MIN)
     @Max(value = 5, message = MessageConstants.VALIDATION_MESSAGE_MAX)
     private int acidity;

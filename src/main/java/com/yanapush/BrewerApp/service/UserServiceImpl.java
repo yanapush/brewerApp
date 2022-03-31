@@ -3,6 +3,7 @@ package com.yanapush.BrewerApp.service;
 import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.dao.UserRepository;
 import com.yanapush.BrewerApp.entity.Recipe;
+import com.yanapush.BrewerApp.entity.Role;
 import com.yanapush.BrewerApp.entity.User;
 import com.yanapush.BrewerApp.exception.EntityDeletingFailedException;
 import com.yanapush.BrewerApp.exception.EntityNotFoundException;
@@ -10,9 +11,11 @@ import com.yanapush.BrewerApp.exception.EntityNotSavedException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,7 +26,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @NonNull
     UserRepository repository;
 
-    private MessageConstants constants = new MessageConstants();
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private MessageConstants constants;
 
     @Override
     public User getUser(int id) {
@@ -44,10 +51,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public boolean addUser(User user) {
-        log.info("adding user " + user.toString());
+    public User addUser(User user) {
+        String encodedPassword
+                = passwordEncoder.encode(user.getPassword());
+        user.setEnabled(Boolean.TRUE);
+        user.setPassword(encodedPassword);
+        user.setUsername(user.getUsername());
+        Role role = new Role();
+        role.setAuthority("ROLE_USER");
+        role.setUser(user);
+        user.addRole(role);
+        log.info("adding user " + user);
         if (repository.save(user) == user) {
-            return true;
+            return user;
         }
         throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "user"));
     }
@@ -83,8 +99,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public boolean changeUserPassword(String username, String password) {
+    public User changeUserPassword(String username, String password) {
         log.error("looking for user " + username);
+        password = passwordEncoder.encode(password);
         User user = repository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_FIELD, "user", "username", username)));
         log.info("setting " + username + " password to " + password);
         user.setPassword(password);
@@ -92,7 +109,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (repository.save(user) != user) {
             throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "password"));
         }
-        return true;
+        return user;
     }
 
     @Override

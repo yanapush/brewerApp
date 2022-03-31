@@ -10,12 +10,12 @@ public interface UserService {
 
     User getUserByRecipe(Recipe recipe);
 
-    boolean addUser(User user);
+    User addUser(User user);
 
     boolean deleteUser(User user);
 
     boolean deleteUser(int id);
 
-    boolean changeUserPassword(String username, String password);
+    User changeUserPassword(String username, String password);
 
 }

@@ -5,13 +5,17 @@ import com.yanapush.BrewerApp.dao.RecipeRepository;
 import com.yanapush.BrewerApp.entity.Characteristic;
 import com.yanapush.BrewerApp.entity.Recipe;
 import com.yanapush.BrewerApp.entity.Step;
+import com.yanapush.BrewerApp.entity.User;
 import com.yanapush.BrewerApp.exception.EntityDeletingFailedException;
 import com.yanapush.BrewerApp.exception.EntityNotFoundException;
 import com.yanapush.BrewerApp.exception.EntityNotSavedException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +28,11 @@ public class RecipeServiceImpl implements RecipeService {
     @NonNull
     RecipeRepository repository;
 
-    private MessageConstants constants= new MessageConstants();
+    @Autowired
+    private MessageConstants constants;
+
+    @NonNull
+    UserServiceImpl userService;
 
     @Override
     public Recipe getRecipe(int id) {
@@ -57,34 +65,37 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public boolean addRecipe(Recipe recipe) {
+    public Recipe addRecipe(Recipe recipe) {
         log.info("adding recipe " + recipe.toString());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = userService.getUser(authentication.getName());
+        recipe.setAuthor(currentUser);
         if (repository.save(recipe) == recipe) {
-            return true;
+            return recipe;
         }
         throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "recipe"));
     }
 
     @Override
-    public boolean addStep(int recipe_id, Step step) {
+    public Recipe addStep(int recipe_id, Step step) {
         log.info("looking for recipe with id=" + recipe_id);
         Recipe recipe = repository.findById(recipe_id).orElseThrow(() -> new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "recipe", recipe_id)));
         log.info("adding step " + step.toString() + " to recipe with id=" + recipe_id);
         recipe.addStep(step);
         if (repository.save(recipe) == recipe) {
-            return true;
+            return recipe;
         }
         throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "recipe"));
     }
 
     @Override
-    public boolean setSteps(int recipe_id, List<Step> steps) {
+    public Recipe setSteps(int recipe_id, List<Step> steps) {
         log.info("looking for recipe with id=" + recipe_id);
         Recipe recipe = repository.findById(recipe_id).orElseThrow(() -> new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "recipe", recipe_id)));
         log.info("adding steps " + steps.toString() + " to recipe with id=" + recipe_id);
         recipe.setSteps(steps);
         if (repository.save(recipe) == recipe) {
-            return true;
+            return recipe;
         }
         throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "recipe"));
 
@@ -97,13 +108,14 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public boolean addCharacteristics(int recipe_id, Characteristic characteristic) {
+    public Recipe addCharacteristics(int recipe_id, Characteristic characteristic) {
         log.info("looking for recipe with id=" + recipe_id);
+        characteristic.setId(recipe_id);
         Recipe recipe = repository.findById(recipe_id).orElseThrow(() -> new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "recipe", recipe_id)));
         log.info("adding characteristics " + characteristic.toString() + " to recipe with id=" + recipe_id);
         recipe.setCharacteristic(characteristic);
         if (repository.save(recipe) == recipe) {
-            return true;
+            return recipe;
         }
         throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "recipe"));
 
@@ -118,13 +130,13 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public boolean addDescription(int recipe_id, String description) {
+    public Recipe addDescription(int recipe_id, String description) {
         log.info("looking for recipe with id=" + recipe_id);
         Recipe recipe = repository.findById(recipe_id).orElseThrow(() -> new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_ID, "recipe", recipe_id)));
         log.info("adding description " + description + " to recipe with id=" + recipe_id);
         recipe.setDescription(description);
         if (repository.save(recipe) == recipe) {
-            return true;
+            return recipe;
         }
         throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "recipe"));
 

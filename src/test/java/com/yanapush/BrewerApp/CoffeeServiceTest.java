@@ -65,7 +65,7 @@ public class CoffeeServiceTest {
     @Test
     public void addCoffee_success() {
         when(dao.save(coffee2)).thenReturn(coffee2);
-        assertTrue(coffeeServiceImpl.addCoffee(coffee2));
+        assertTrue(coffeeServiceImpl.addCoffee(coffee2) == coffee2);
     }
 
     @Test

@@ -9,6 +9,7 @@ import com.yanapush.BrewerApp.exception.EntityNotSavedException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -20,7 +21,8 @@ public class CoffeeServiceImpl implements CoffeeService {
     @NonNull
     CoffeeRepository coffeeRepository;
 
-    MessageConstants constants = new MessageConstants();
+    @Autowired
+    private MessageConstants constants;
 
     @Override
     public Coffee getCoffee(int id) {
@@ -35,12 +37,12 @@ public class CoffeeServiceImpl implements CoffeeService {
     }
 
     @Override
-    public boolean addCoffee(Coffee coffee) {
+    public Coffee addCoffee(Coffee coffee) {
         log.info("beginning of adding coffee " + coffee.toString());
         if (coffeeRepository.save(coffee) == coffee) {
-            return true;
+            return coffee;
         }
-        throw new EntityNotSavedException(String.format(String.format(constants.ERROR_ADDING, "coffee")));
+        throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "coffee"));
     }
 
     @Override
