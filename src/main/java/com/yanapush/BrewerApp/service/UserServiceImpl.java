@@ -29,7 +29,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    private MessageConstants constants = new MessageConstants();
+    @Autowired
+    private MessageConstants constants;
 
     @Override
     public User getUser(int id) {
