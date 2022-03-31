@@ -6,7 +6,7 @@ import com.yanapush.BrewerApp.service.CoffeeServiceImpl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +22,8 @@ public class CoffeeController {
     @NonNull
     CoffeeServiceImpl coffeeServiceImpl;
 
-    MessageConstants constants = new MessageConstants();
+    @Autowired
+    private MessageConstants constants;
 
     @GetMapping
     public ResponseEntity<?> getCoffee(@RequestParam(required = false) Integer id) {
