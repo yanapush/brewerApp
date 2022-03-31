@@ -3,6 +3,9 @@ package com.yanapush.BrewerApp.controller;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.spec.InvalidKeySpecException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.yanapush.BrewerApp.constant.MessageConstants;
 import com.yanapush.BrewerApp.entity.User;
@@ -50,8 +53,10 @@ public class LoginController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("got request to change password to " + password);
         if (authentication.isAuthenticated()) {
-            service.changeUserPassword(authentication.getName(), password);
-            return ResponseEntity.ok(String.format(constants.SUCCESS_ADDING, "password"));
+            Map<String, Object> body = new LinkedHashMap<>();
+            body.put("user", service.changeUserPassword(authentication.getName(), password));
+            body.put("message", String.format(constants.SUCCESS_ADDING, "password"));
+            return new ResponseEntity<>(body, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("not authorized", HttpStatus.FORBIDDEN);
         }
@@ -79,6 +84,9 @@ public class LoginController {
     public ResponseEntity<?> doRegister(@Valid @RequestBody User user) {
         log.info("got request to register user " + user.toString());
         service.addUser(user);
-        return ResponseEntity.ok(String.format(constants.SUCCESS_ADDING, "user"));
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("user", service.addUser(user));
+        body.put("message", String.format(constants.SUCCESS_ADDING, "user"));
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 }

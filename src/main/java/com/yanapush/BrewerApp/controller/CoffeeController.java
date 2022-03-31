@@ -7,10 +7,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/coffee")
@@ -34,14 +38,18 @@ public class CoffeeController {
     @PostMapping
     public ResponseEntity<?> addCoffee(@Valid @RequestBody Coffee coffee) {
         log.info("got request to add coffee " + coffee.toString());
-        coffeeServiceImpl.addCoffee(coffee);
-        return ResponseEntity.ok(String.format(constants.SUCCESS_ADDING, "coffee"));
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("coffee", coffeeServiceImpl.addCoffee(coffee));
+        body.put("message", String.format(constants.SUCCESS_ADDING, "coffee"));
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteCoffee(@RequestParam Integer id) {
         log.info("got request to delete coffee with id=" + id);
-        coffeeServiceImpl.deleteCoffee(id);
-        return ResponseEntity.ok(String.format(constants.SUCCESS_DELETING, "coffee"));
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("isSuccess", coffeeServiceImpl.deleteCoffee(id));
+        body.put("message", String.format(constants.SUCCESS_DELETING, "coffee"));
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 }

@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public boolean addUser(User user) {
+    public User addUser(User user) {
         String encodedPassword
                 = passwordEncoder.encode(user.getPassword());
         user.setEnabled(Boolean.TRUE);
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.addRole(role);
         log.info("adding user " + user);
         if (repository.save(user) == user) {
-            return true;
+            return user;
         }
         throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "user"));
     }
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public boolean changeUserPassword(String username, String password) {
+    public User changeUserPassword(String username, String password) {
         log.error("looking for user " + username);
         password = passwordEncoder.encode(password);
         User user = repository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(String.format(constants.ERROR_GETTING_BY_FIELD, "user", "username", username)));
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (repository.save(user) != user) {
             throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "password"));
         }
-        return true;
+        return user;
     }
 
     @Override

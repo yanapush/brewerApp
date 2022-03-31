@@ -35,12 +35,12 @@ public class CoffeeServiceImpl implements CoffeeService {
     }
 
     @Override
-    public boolean addCoffee(Coffee coffee) {
+    public Coffee addCoffee(Coffee coffee) {
         log.info("beginning of adding coffee " + coffee.toString());
         if (coffeeRepository.save(coffee) == coffee) {
-            return true;
+            return coffee;
         }
-        throw new EntityNotSavedException(String.format(String.format(constants.ERROR_ADDING, "coffee")));
+        throw new EntityNotSavedException(String.format(constants.ERROR_ADDING, "coffee"));
     }
 
     @Override
